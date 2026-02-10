@@ -89,7 +89,11 @@ button {
 <h2>Evaluación de contenido</h2>
 
 <div class="grid">
-<strong></strong><strong>Leve</strong><strong>Mod.</strong><strong>Sev.</strong>
+<strong></strong>
+<strong>Nada</strong>
+<strong>Leve</strong>
+<strong>Mod.</strong>
+<strong>Sev.</strong>
 
 <script>
 const categorias = ["sexo","violencia","lenguaje","drogas","miedo"];
@@ -98,6 +102,7 @@ document.write(categorias.map(c => `
 <div class="radio-group"><input type="radio" name="${c}" value="0" checked></div>
 <div class="radio-group"><input type="radio" name="${c}" value="1"></div>
 <div class="radio-group"><input type="radio" name="${c}" value="2"></div>
+<div class="radio-group"><input type="radio" name="${c}" value="3"></div>
 `).join(""));
 </script>
 

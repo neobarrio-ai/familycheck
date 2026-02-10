@@ -293,6 +293,15 @@ function toggleListado() {
   listado.style.display = listado.style.display === "none" ? "block" : "none";
   renderListado();
 }
+function borrarFicha(id) {
+  if (!confirm("¿Seguro que quieres borrar esta ficha?")) return;
+
+  const data = JSON.parse(localStorage.getItem("familycheck") || "[]");
+  const filtradas = data.filter(f => f.id !== id);
+
+  localStorage.setItem("familycheck", JSON.stringify(filtradas));
+  renderListado();
+}
 
 function renderListado() {
   const contenedor = document.getElementById("resultadoListado");
@@ -320,25 +329,37 @@ function renderListado() {
   if (peliculas.length) {
     html += "<h3>🎬 Películas</h3>";
     peliculas.forEach(f => {
-      html += `
-        <div style="padding:8px 0;border-bottom:1px solid #eee;">
-          <strong>${f.titulo}</strong><br>
-          ${f.extra1} · ${f.extra2}
-        </div>
-      `;
-    });
+  html += `
+    <div style="padding:8px 0;border-bottom:1px solid #eee;">
+      <strong>${f.titulo}</strong><br>
+      ${f.extra1} · ${f.extra2}<br>
+      <button
+        onclick="borrarFicha('${f.id}')"
+        style="margin-top:6px;background:#c62828;">
+        🗑 Borrar
+      </button>
+    </div>
+  `;
+});
+
   }
 
   if (libros.length) {
     html += "<h3>📚 Libros</h3>";
     libros.forEach(f => {
-      html += `
-        <div style="padding:8px 0;border-bottom:1px solid #eee;">
-          <strong>${f.titulo}</strong><br>
-          ${f.extra1} · ISBN ${f.extra2}
-        </div>
-      `;
-    });
+  html += `
+    <div style="padding:8px 0;border-bottom:1px solid #eee;">
+      <strong>${f.titulo}</strong><br>
+      ${f.extra1} · ISBN ${f.extra2}<br>
+      <button
+        onclick="borrarFicha('${f.id}')"
+        style="margin-top:6px;background:#c62828;">
+        🗑 Borrar
+      </button>
+    </div>
+  `;
+});
+
   }
 
   if (!peliculas.length && !libros.length) {
@@ -352,6 +373,7 @@ function renderListado() {
 
 </body>
 </html>
+
 
 
 

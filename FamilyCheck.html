@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FamilyCheck – Añadir ficha</title>
+
+<style>
+body {
+  font-family: system-ui, sans-serif;
+  background: #f7f7f7;
+  margin: 0;
+  padding: 16px;
+}
+h1 {
+  font-size: 1.4rem;
+}
+.card {
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+label {
+  font-weight: 600;
+  display: block;
+  margin-top: 12px;
+}
+input, textarea, select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 4px;
+  font-size: 1rem;
+}
+.grid {
+  display: grid;
+  grid-template-columns: 1fr repeat(3, 80px);
+  gap: 8px;
+  align-items: center;
+}
+.grid strong {
+  font-size: 0.9rem;
+}
+.radio-group {
+  text-align: center;
+}
+.result {
+  background: #eef6ff;
+  padding: 12px;
+  border-radius: 6px;
+  margin-top: 12px;
+  font-weight: 600;
+}
+button {
+  width: 100%;
+  padding: 14px;
+  font-size: 1rem;
+  background: #0066cc;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  margin-top: 16px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>➕ Añadir ficha – FamilyCheck</h1>
+
+<div class="card">
+<label>Tipo de contenido</label>
+<select id="tipo">
+  <option value="pelicula">Película</option>
+  <option value="libro">Libro</option>
+</select>
+
+<label>Título</label>
+<input id="titulo">
+
+<label id="campoExtra1">Año</label>
+<input id="extra1">
+
+<label id="campoExtra2">Director</label>
+<input id="extra2">
+</div>
+
+<div class="card">
+<h2>Evaluación de contenido</h2>
+
+<div class="grid">
+<strong></strong><strong>Leve</strong><strong>Mod.</strong><strong>Sev.</strong>
+
+<script>
+const categorias = ["sexo","violencia","lenguaje","drogas","miedo"];
+document.write(categorias.map(c => `
+<strong>${c.charAt(0).toUpperCase()+c.slice(1)}</strong>
+<div class="radio-group"><input type="radio" name="${c}" value="0" checked></div>
+<div class="radio-group"><input type="radio" name="${c}" value="1"></div>
+<div class="radio-group"><input type="radio" name="${c}" value="2"></div>
+`).join(""));
+</script>
+
+</div>
+</div>
+
+<div class="card">
+<label>Comentarios propios (opcional)</label>
+<textarea id="comentarios" rows="4"
+placeholder="Ej: escena de agresión sexual, tono psicológico constante..."></textarea>
+
+<div class="result" id="resultado">
+Edad recomendada: —<br>
+Índice FamilyCheck (FC): —
+</div>
+
+<button onclick="guardar()">Guardar ficha</button>
+<button onclick="exportar()">📤 Exportar fichas</button>
+
+<label style="display:block;margin-top:12px;">
+  <input type="file" accept=".json" onchange="importar(event)">
+</label>
+</div>
+
+<script>
+function calcular() {
+  const pesos = {sexo:3, violencia:3, miedo:2, lenguaje:1, drogas:1};
+  let impacto = 0;
+  categorias.forEach(c => {
+    const val = document.querySelector(`input[name=${c}]:checked`).value;
+    impacto += val * pesos[c];
+  });
+
+  let edad = impacto >= 8 ? 16 : impacto >= 3 ? 12 : 7;
+  let fc = Math.max(1, 10 - impacto);
+
+  document.getElementById("resultado").innerHTML =
+    `Edad recomendada: ${edad}+<br>Índice FamilyCheck (FC): ${fc}/10`;
+}
+
+document.querySelectorAll("input[type=radio]").forEach(r => r.addEventListener("change", calcular));
+calcular();
+
+function guardar() {
+  const ficha = {
+  id: crypto.randomUUID(),
+  tipo: tipo.value,
+  titulo: titulo.value,
+  extra1: extra1.value,
+  extra2: extra2.value,
+  comentarios: comentarios.value,
+  categorias: Object.fromEntries(categorias.map(c => [
+    c, document.querySelector(`input[name=${c}]:checked`).value
+  ]))
+};
+
+  const data = JSON.parse(localStorage.getItem("familycheck") || "[]");
+  data.push(ficha);
+  localStorage.setItem("familycheck", JSON.stringify(data));
+  alert("Ficha guardada");
+}
+function exportar() {
+  const data = localStorage.getItem("familycheck");
+  if (!data) {
+    alert("No hay fichas para exportar");
+    return;
+  }
+
+  const blob = new Blob([data], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "familycheck_fichas.json";
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
+
+function importar(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const nuevas = JSON.parse(e.target.result);
+      const existentes = JSON.parse(localStorage.getItem("familycheck") || "[]");
+
+      const ids = new Set(existentes.map(f => f.id));
+      const filtradas = nuevas.filter(f => !ids.has(f.id));
+
+      const combinadas = [...existentes, ...filtradas];
+      localStorage.setItem("familycheck", JSON.stringify(combinadas));
+
+      alert(`Importadas ${filtradas.length} fichas`);
+    } catch (e) {
+      alert("Archivo no válido");
+    }
+  };
+  reader.readAsText(file);
+}
+
+</script>
+
+</body>
+</html>

@@ -117,10 +117,23 @@ Edad recomendada: —<br>
 
 <button onclick="guardar()">Guardar ficha</button>
 <button onclick="exportar()">📤 Exportar fichas</button>
+<button onclick="toggleListado()">📋 Ver fichas</button>
 
 <label style="display:block;margin-top:12px;">
   <input type="file" accept=".json" onchange="importar(event)">
 </label>
+</div>
+<div class="card" id="listado" style="display:none;">
+  <h2>Fichas guardadas</h2>
+
+  <input
+    type="text"
+    id="buscador"
+    placeholder="Buscar por título, director o ISBN"
+    oninput="renderListado()"
+  >
+
+  <div id="resultadoListado"></div>
 </div>
 
 <script>
@@ -201,10 +214,70 @@ function importar(event) {
   };
   reader.readAsText(file);
 }
+function toggleListado() {
+  const listado = document.getElementById("listado");
+  listado.style.display = listado.style.display === "none" ? "block" : "none";
+  renderListado();
+}
+
+function renderListado() {
+  const contenedor = document.getElementById("resultadoListado");
+  const texto = document.getElementById("buscador").value.toLowerCase();
+  const data = JSON.parse(localStorage.getItem("familycheck") || "[]");
+
+  const peliculas = data.filter(f =>
+    f.tipo === "pelicula" &&
+    (
+      f.titulo.toLowerCase().includes(texto) ||
+      f.extra2.toLowerCase().includes(texto) // director
+    )
+  );
+
+  const libros = data.filter(f =>
+    f.tipo === "libro" &&
+    (
+      f.titulo.toLowerCase().includes(texto) ||
+      f.extra2.toLowerCase().includes(texto) // ISBN
+    )
+  );
+
+  let html = "";
+
+  if (peliculas.length) {
+    html += "<h3>🎬 Películas</h3>";
+    peliculas.forEach(f => {
+      html += `
+        <div style="padding:8px 0;border-bottom:1px solid #eee;">
+          <strong>${f.titulo}</strong><br>
+          ${f.extra1} · ${f.extra2}
+        </div>
+      `;
+    });
+  }
+
+  if (libros.length) {
+    html += "<h3>📚 Libros</h3>";
+    libros.forEach(f => {
+      html += `
+        <div style="padding:8px 0;border-bottom:1px solid #eee;">
+          <strong>${f.titulo}</strong><br>
+          ${f.extra1} · ISBN ${f.extra2}
+        </div>
+      `;
+    });
+  }
+
+  if (!peliculas.length && !libros.length) {
+    html = "<em>No hay resultados</em>";
+  }
+
+  contenedor.innerHTML = html;
+}
 
 </script>
 
 </body>
 </html>
+
 
 

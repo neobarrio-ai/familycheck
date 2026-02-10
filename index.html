@@ -106,9 +106,25 @@ document.write(categorias.map(c => `
 </div>
 
 <div class="card">
-<label>Comentarios propios (opcional)</label>
-<textarea id="comentarios" rows="4"
-placeholder="Ej: escena de agresión sexual, tono psicológico constante..."></textarea>
+  <label>📝 Comentario opcional</label>
+
+  <select id="comentarioCategoria">
+    <option value="">(elige categoría)</option>
+    <option value="sexo">Sexo y desnudos</option>
+    <option value="violencia">Violencia</option>
+    <option value="lenguaje">Lenguaje</option>
+    <option value="drogas">Alcohol y drogas</option>
+    <option value="miedo">Miedo / impacto emocional</option>
+  </select>
+
+  <textarea
+    id="comentarioTexto"
+    rows="2"
+    placeholder="Ej: escena de agresión sexual implícita"
+    style="margin-top:8px;"
+  ></textarea>
+</div>
+
 
 <div class="result" id="resultado">
 Edad recomendada: —<br>
@@ -157,6 +173,10 @@ calcular();
 
 function guardar() {
   const ficha = {
+    comentario: {
+  categoria: document.getElementById("comentarioCategoria").value,
+  texto: document.getElementById("comentarioTexto").value
+},
   id: crypto.randomUUID(),
   tipo: tipo.value,
   titulo: titulo.value,
@@ -278,6 +298,7 @@ function renderListado() {
 
 </body>
 </html>
+
 
 
 

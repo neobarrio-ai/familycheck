@@ -106,7 +106,7 @@ document.write(categorias.map(c => `
 </div>
 
 <div class="card">
-  <label>📝 Comentario opcional</label>
+  <label>📝 Comentarios por categoría</label>
 
   <select id="comentarioCategoria">
     <option value="">(elige categoría)</option>
@@ -120,10 +120,20 @@ document.write(categorias.map(c => `
   <textarea
     id="comentarioTexto"
     rows="2"
-    placeholder="Ej: escena de agresión sexual implícita"
+    placeholder="Comentario breve sobre esta categoría"
     style="margin-top:8px;"
   ></textarea>
+
+  <button type="button"
+          onclick="confirmarComentario()"
+          style="margin-top:8px;background:#ddd;color:#000;">
+    OK
+  </button>
+
+  <div id="comentariosConfirmados"
+       style="margin-top:8px;font-size:0.9rem;color:#555;"></div>
 </div>
+
 
 
 <div class="result" id="resultado">
@@ -153,6 +163,7 @@ Edad recomendada: —<br>
 </div>
 
 <script>
+let comentariosTemp = {};
 function calcular() {
   const pesos = {sexo:3, violencia:3, miedo:2, lenguaje:1, drogas:1};
   let impacto = 0;
@@ -173,26 +184,69 @@ calcular();
 
 function guardar() {
   const ficha = {
-    comentario: {
-  categoria: document.getElementById("comentarioCategoria").value,
-  texto: document.getElementById("comentarioTexto").value
-},
   id: crypto.randomUUID(),
   tipo: tipo.value,
   titulo: titulo.value,
   extra1: extra1.value,
   extra2: extra2.value,
-  comentarios: comentarios.value,
+  comentarios: comentariosTemp,
   categorias: Object.fromEntries(categorias.map(c => [
     c, document.querySelector(`input[name=${c}]:checked`).value
   ]))
 };
 
   const data = JSON.parse(localStorage.getItem("familycheck") || "[]");
+  const existe = data.some(f =>
+  f.tipo === tipo.value &&
+  f.titulo.trim().toLowerCase() === titulo.value.trim().toLowerCase() &&
+  f.extra1.trim() === extra1.value.trim() &&
+  f.extra2.trim().toLowerCase() === extra2.value.trim().toLowerCase()
+);
+
+if (existe) {
+  alert("⚠️ Esta ficha ya existe");
+  return;
+}
+
   data.push(ficha);
   localStorage.setItem("familycheck", JSON.stringify(data));
+  comentariosTemp = {};
+renderComentariosConfirmados();
+
   alert("Ficha guardada");
 }
+function confirmarComentario() {
+  const categoria = document.getElementById("comentarioCategoria").value;
+  const texto = document.getElementById("comentarioTexto").value.trim();
+
+  if (!categoria || !texto) {
+    alert("Selecciona una categoría y escribe un comentario");
+    return;
+  }
+
+  comentariosTemp[categoria] = texto;
+
+  document.getElementById("comentarioCategoria").value = "";
+  document.getElementById("comentarioTexto").value = "";
+
+  renderComentariosConfirmados();
+}
+
+function renderComentariosConfirmados() {
+  const contenedor = document.getElementById("comentariosConfirmados");
+
+  if (Object.keys(comentariosTemp).length === 0) {
+    contenedor.innerText = "";
+    return;
+  }
+
+  contenedor.innerHTML =
+    "✔ Comentarios añadidos:<br>" +
+    Object.entries(comentariosTemp)
+      .map(([cat, txt]) => `• <strong>${cat}</strong>: ${txt}`)
+      .join("<br>");
+}
+
 function exportar() {
   const data = localStorage.getItem("familycheck");
   if (!data) {
@@ -298,6 +352,7 @@ function renderListado() {
 
 </body>
 </html>
+
 
 
 

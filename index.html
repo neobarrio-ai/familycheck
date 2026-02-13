@@ -6,35 +6,19 @@
 <title>FamilyCheck</title>
 
 <style>
-:root {
-  --verde: #2e7d32;
-  --azul: #1565c0;
-  --naranja: #ef6c00;
-  --rojo: #c62828;
-  --fondo: #f5f7fa;
-  --card: #ffffff;
-  --borde: #e0e0e0;
-}
-
 body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--fondo);
+  font-family: system-ui, sans-serif;
+  background: #f7f7f7;
   margin: 0;
   padding: 16px;
-  color: #222;
 }
-
-h1 {
-  font-size: 1.4rem;
-  margin-bottom: 16px;
-}
+h1 { font-size: 1.4rem; }
 
 .card {
-  background: var(--card);
-  border-radius: 12px;
+  background: #fff;
   padding: 16px;
+  border-radius: 8px;
   margin-bottom: 16px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
 label {
@@ -45,64 +29,50 @@ label {
 
 input, select {
   width: 100%;
-  padding: 10px;
-  margin-top: 6px;
-  font-size: 1rem;
-  border-radius: 8px;
-  border: 1px solid var(--borde);
+  padding: 8px;
+  margin-top: 4px;
 }
 
-.categoria {
-  padding: 12px 0;
-  border-bottom: 1px solid var(--borde);
+.grid {
+  display: grid;
+  grid-template-columns: 1fr repeat(4, 50px);
+  gap: 6px;
+  align-items: center;
 }
 
-.categoria:last-child {
-  border-bottom: none;
-}
-
-.cabecera {
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
-.opciones {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 6px;
-}
-
-.opciones label {
-  font-weight: normal;
-  font-size: 0.9rem;
+.radio {
+  text-align: center;
 }
 
 .presencia {
-  margin-top: 6px;
+  grid-column: 1 / -1;
   font-size: 0.85rem;
+  margin-left: 6px;
   display: none;
 }
 
-.resultado {
-  padding: 16px;
-  border-radius: 12px;
+.result {
+  background: #eef6ff;
+  padding: 12px;
+  border-radius: 6px;
   font-weight: 600;
 }
 
-.A { background:#e8f5e9; color:var(--verde); }
-.B { background:#e3f2fd; color:var(--azul); }
-.C { background:#fff3e0; color:var(--naranja); }
-.D { background:#ffebee; color:var(--rojo); }
-
 button {
   width: 100%;
-  padding: 14px;
-  margin-top: 16px;
-  border-radius: 10px;
-  border: none;
-  font-size: 1rem;
-  background: var(--azul);
+  padding: 12px;
+  margin-top: 10px;
+  background: #0066cc;
   color: #fff;
+  border: none;
+  border-radius: 6px;
+}
+
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #eee;
+  padding: 8px 0;
 }
 </style>
 </head>
@@ -112,104 +82,135 @@ button {
 <h1>➕ Añadir ficha – FamilyCheck</h1>
 
 <div class="card">
+  <label>Tipo</label>
+  <select id="tipo">
+    <option value="pelicula">Película</option>
+    <option value="libro">Libro</option>
+  </select>
+
   <label>Título</label>
   <input id="titulo">
+
+  <label>Año / ISBN</label>
+  <input id="extra1">
+
+  <label>Director / Autor</label>
+  <input id="extra2">
 </div>
 
-<div class="card" id="evaluacion"></div>
+<div class="card">
+  <h2>Evaluación de contenido</h2>
 
-<div class="resultado A" id="resultado">
-  Edad recomendada: —<br>
-  FamilyCheck: —
+  <div class="grid">
+    <strong></strong>
+    <strong>Nada</strong><strong>Leve</strong><strong>Mod.</strong><strong>Sev.</strong>
+
+    <script>
+    const categorias = ["sexo","violencia","lenguaje","drogas","miedo"];
+    document.write(categorias.map(c => `
+      <strong>${c.charAt(0).toUpperCase()+c.slice(1)}</strong>
+      ${[0,1,2,3].map(v=>`
+        <div class="radio">
+          <input type="radio" name="${c}" value="${v}"
+            ${v===0?"checked":""}
+            onchange="mostrarPresencia('${c}')">
+        </div>`).join("")}
+
+      <div class="presencia" id="pres_${c}">
+        Presencia:
+        <label><input type="radio" name="pres_${c}" value="puntual" checked onchange="actualizar()"> Puntual</label>
+        <label><input type="radio" name="pres_${c}" value="continuado" onchange="actualizar()"> Continuado</label>
+      </div>
+    `).join(""));
+    </script>
+  </div>
+</div>
+
+<div class="result" id="resultado">
+Edad recomendada: — <br> FC: —
+</div>
+
+<button onclick="guardar()">Guardar ficha</button>
+<button onclick="toggleListado()">📋 Ver fichas</button>
+
+<div class="card" id="listado" style="display:none;">
+  <input id="buscador" placeholder="Buscar..." oninput="renderListado()">
+  <div id="resultadoListado"></div>
 </div>
 
 <script>
-const categorias = [
-  { id:"sexo", nombre:"Sexo y desnudos" },
-  { id:"violencia", nombre:"Violencia" },
-  { id:"lenguaje", nombre:"Lenguaje" },
-  { id:"drogas", nombre:"Alcohol y drogas" },
-  { id:"miedo", nombre:"Miedo / impacto emocional" }
-];
-
 let estado = {};
 
-const contenedor = document.getElementById("evaluacion");
-
-categorias.forEach(cat => {
-  contenedor.innerHTML += `
-    <div class="categoria">
-      <div class="cabecera">${cat.nombre}</div>
-      <div class="opciones">
-        ${["Nada","Leve","Mod.","Sev."].map((txt,i) => `
-          <label>
-            <input type="radio" name="${cat.id}" value="${i}"
-              ${i===0?"checked":""}
-              onchange="actualizar('${cat.id}')">
-            ${txt}
-          </label>
-        `).join("")}
-      </div>
-
-      <div class="presencia" id="pres_${cat.id}">
-        Presencia:
-        <label>
-          <input type="radio" name="pres_${cat.id}" value="puntual" checked
-            onchange="actualizar('${cat.id}')">
-          Puntual
-        </label>
-        <label>
-          <input type="radio" name="pres_${cat.id}" value="continuado"
-            onchange="actualizar('${cat.id}')">
-          Continuado
-        </label>
-      </div>
-    </div>
-  `;
-});
-
-function actualizar(cat) {
+function mostrarPresencia(cat) {
   const nivel = Number(document.querySelector(`input[name=${cat}]:checked`).value);
-  const pres = document.getElementById(`pres_${cat}`);
+  const bloque = document.getElementById(`pres_${cat}`);
+  bloque.style.display = nivel >= 2 ? "block" : "none";
+  actualizar();
+}
 
-  if (nivel >= 2) {
-    pres.style.display = "block";
-    const p = document.querySelector(`input[name=pres_${cat}]:checked`).value;
-    estado[cat] = { nivel, presencia: p };
-  } else {
-    pres.style.display = "none";
-    estado[cat] = { nivel };
-  }
-
+function actualizar() {
+  categorias.forEach(c => {
+    const nivel = Number(document.querySelector(`input[name=${c}]:checked`).value);
+    if (nivel >= 2) {
+      const pres = document.querySelector(`input[name=pres_${c}]:checked`).value;
+      estado[c] = {nivel, pres};
+    } else estado[c] = {nivel};
+  });
   calcularFC();
 }
 
 function calcularFC() {
   let fc = 9;
-
-  Object.values(estado).forEach(d => {
-    if (d.nivel === 2) fc -= d.presencia==="continuado" ? 1 : 0.5;
-    if (d.nivel === 3) fc -= d.presencia==="continuado" ? 2 : 1;
+  Object.values(estado).forEach(d=>{
+    if(d.nivel===2) fc -= d.pres==="continuado"?1:0.5;
+    if(d.nivel===3) fc -= d.pres==="continuado"?2:1;
   });
-
-  fc = Math.round(Math.max(1, Math.min(10, fc)));
-
-  let letra = "A", clase="A", edad=7;
-  if (fc <= 3) { letra="D"; clase="D"; edad=16; }
-  else if (fc <= 6) { letra="C"; clase="C"; edad=12; }
-  else if (fc <= 8) { letra="B"; clase="B"; edad=12; }
-
-  const r = document.getElementById("resultado");
-  r.className = `resultado ${clase}`;
-  r.innerHTML = `
-    Edad recomendada: ${edad}+<br>
-    FamilyCheck: <strong>${letra}</strong> · FC ${fc}/10
-  `;
+  fc = Math.max(1,Math.min(10,Math.round(fc)));
+  let edad = fc>=8?7:fc>=6?12:16;
+  resultado.innerHTML = `Edad recomendada: ${edad}+<br>FC: ${fc}/10`;
 }
 
-// Inicializar
-categorias.forEach(c => estado[c.id]={nivel:0});
-calcularFC();
+function guardar() {
+  const ficha = {
+    id: crypto.randomUUID(),
+    tipo: tipo.value,
+    titulo: titulo.value,
+    extra1: extra1.value,
+    extra2: extra2.value,
+    estado
+  };
+  const data = JSON.parse(localStorage.getItem("fc")||"[]");
+  if(data.some(f=>f.titulo.toLowerCase()===ficha.titulo.toLowerCase())) {
+    alert("Ya existe");
+    return;
+  }
+  data.push(ficha);
+  localStorage.setItem("fc",JSON.stringify(data));
+  alert("Guardada");
+}
+
+function toggleListado(){
+  listado.style.display = listado.style.display==="none"?"block":"none";
+  renderListado();
+}
+
+function renderListado(){
+  const data = JSON.parse(localStorage.getItem("fc")||"[]");
+  resultadoListado.innerHTML = data.map(f=>`
+    <div class="list-item">
+      <div><strong>${f.titulo}</strong><br>${f.extra1} · ${f.extra2}</div>
+      <button onclick="borrar('${f.id}')">🗑</button>
+    </div>`).join("");
+}
+
+function borrar(id){
+  let data = JSON.parse(localStorage.getItem("fc")||"[]");
+  data = data.filter(f=>f.id!==id);
+  localStorage.setItem("fc",JSON.stringify(data));
+  renderListado();
+}
+
+actualizar();
 </script>
 
 </body>

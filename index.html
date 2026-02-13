@@ -164,20 +164,64 @@ Edad recomendada: —<br>
 
 <script>
 let comentariosTemp = {};
-function calcular() {
-  const pesos = {sexo:3, violencia:3, miedo:2, lenguaje:1, drogas:1};
-  let impacto = 0;
-  categorias.forEach(c => {
-    const val = document.querySelector(`input[name=${c}]:checked`).value;
-    impacto += val * pesos[c];
+function calcularFC() {
+  // FC base: contenido familiar mainstream
+  let fc = 9;
+
+  categorias.forEach(cat => {
+    const data = categoriasEstado[cat];
+    const nivel = data.nivel;
+
+    // Leve o Nada no penalizan
+    if (nivel < 2) return;
+
+    const presencia = data.presencia || "puntual";
+
+    if (nivel === 2) {
+      // Moderado
+      fc -= presencia === "continuado" ? 1 : 0.5;
+    }
+
+    if (nivel === 3) {
+      // Severo
+      fc -= presencia === "continuado" ? 2 : 1;
+    }
   });
 
-  let edad = impacto >= 8 ? 16 : impacto >= 3 ? 12 : 7;
-  let fc = Math.max(1, 10 - impacto);
+  // Ajustes finales
+  fc = Math.round(fc);
+  fc = Math.max(1, Math.min(10, fc));
 
-  document.getElementById("resultado").innerHTML =
-    `Edad recomendada: ${edad}+<br>Índice FamilyCheck (FC): ${fc}/10`;
+  // Edad recomendada orientativa
+  let edad;
+  if (fc >= 8) edad = 7;
+  else if (fc >= 6) edad = 12;
+  else edad = 16;
+
+  // Letra + color
+  let letra = "A";
+  let clase = "fc-A";
+
+  if (fc <= 3) {
+    letra = "D";
+    clase = "fc-D";
+  } else if (fc <= 6) {
+    letra = "C";
+    clase = "fc-C";
+  } else if (fc <= 8) {
+    letra = "B";
+    clase = "fc-B";
+  }
+
+  // Mostrar resultado
+  const resultado = document.getElementById("resultado");
+  resultado.className = `result ${clase}`;
+  resultado.innerHTML = `
+    Edad recomendada: ${edad}+<br>
+    FamilyCheck: <strong>${letra}</strong> · FC ${fc}/10
+  `;
 }
+
 
 document.querySelectorAll("input[type=radio]").forEach(r => r.addEventListener("change", calcular));
 calcular();
@@ -402,6 +446,7 @@ function renderListado() {
 
 </body>
 </html>
+
 
 
 

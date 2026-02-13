@@ -42,18 +42,26 @@ body{
 }
 
 .logo{
-  max-width:260px;
+  max-width:520px;   /* mismo ancho que la search */
+  width:100%;
   display:block;
-  margin:0 auto 12px;
+  margin:0 auto 6px; /* menos espacio abajo */
   filter: drop-shadow(0 8px 20px rgba(0,0,0,.45));
 }
+@media (max-width:480px){
+  .logo{ max-width:300px; }
+}
+
 
 
 .tagline{
   color:var(--muted);
-  margin-bottom:28px;
-  font-size:1.05rem;
+  margin-top:-4px;   /* la sube visualmente */
+  margin-bottom:22px;
+  font-size:1.1rem;
+  font-weight:500;
 }
+
 
 /* SEARCH */
 .search-row{

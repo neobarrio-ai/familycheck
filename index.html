@@ -94,12 +94,36 @@ button {
 <script>
 const categorias = ["sexo","violencia","lenguaje","drogas","miedo"];
 document.write(categorias.map(c => `
-<strong>${c.charAt(0).toUpperCase()+c.slice(1)}</strong>
-<div class="radio-group"><input type="radio" name="${c}" value="0" checked></div>
-<div class="radio-group"><input type="radio" name="${c}" value="1"></div>
-<div class="radio-group"><input type="radio" name="${c}" value="2"></div>
-<div class="radio-group"><input type="radio" name="${c}" value="3"></div>
+<strong>${c.charAt(0).toUpperCase() + c.slice(1)}</strong>
+
+<div class="radio-group">
+  <input type="radio" name="${c}" value="0" checked onchange="actualizarCategoriasEstado()">
+</div>
+<div class="radio-group">
+  <input type="radio" name="${c}" value="1" onchange="actualizarCategoriasEstado()">
+</div>
+<div class="radio-group">
+  <input type="radio" name="${c}" value="2" onchange="mostrarPresencia('${c}')">
+</div>
+<div class="radio-group">
+  <input type="radio" name="${c}" value="3" onchange="mostrarPresencia('${c}')">
+</div>
+
+<div id="presencia_${c}"
+     style="grid-column:1 / -1;display:none;font-size:0.9rem;margin-bottom:6px;">
+  Presencia:
+  <label>
+    <input type="radio" name="presencia_${c}" value="puntual" checked>
+    Puntual
+  </label>
+  <label style="margin-left:12px;">
+    <input type="radio" name="presencia_${c}" value="continuado">
+    Continuado
+  </label>
+</div>
 `).join(""));
+
+
 </script>
 
 </div>
@@ -164,6 +188,36 @@ Edad recomendada: —<br>
 
 <script>
 let comentariosTemp = {};
+let categoriasEstado = {};
+function actualizarCategoriasEstado() {
+  categorias.forEach(c => {
+    const nivel = Number(document.querySelector(`input[name=${c}]:checked`).value);
+
+    if (nivel >= 2) {
+      const presencia = document.querySelector(`input[name=presencia_${c}]:checked`).value;
+      categoriasEstado[c] = { nivel, presencia };
+    } else {
+      categoriasEstado[c] = { nivel };
+    }
+  });
+
+  calcularFC();
+}
+
+
+function mostrarPresencia(cat) {
+  const nivel = Number(document.querySelector(`input[name=${cat}]:checked`).value);
+  const bloque = document.getElementById(`presencia_${cat}`);
+
+  if (nivel >= 2) {
+    bloque.style.display = "block";
+  } else {
+    bloque.style.display = "none";
+  }
+
+  actualizarCategoriasEstado();
+}
+
 function calcularFC() {
   // FC base: contenido familiar mainstream
   let fc = 9;
@@ -234,9 +288,8 @@ function guardar() {
   extra1: extra1.value,
   extra2: extra2.value,
   comentarios: comentariosTemp,
-  categorias: Object.fromEntries(categorias.map(c => [
-    c, document.querySelector(`input[name=${c}]:checked`).value
-  ]))
+  categorias: categoriasEstado
+
 };
 
   const data = JSON.parse(localStorage.getItem("familycheck") || "[]");
@@ -347,18 +400,30 @@ function borrarFicha(id) {
   renderListado();
 }
 function calcularFCDesdeFicha(ficha) {
-  const pesos = { sexo:3, violencia:3, miedo:2, lenguaje:1, drogas:1 };
-  let impacto = 0;
+  let fc = 9;
 
-  Object.entries(ficha.categorias).forEach(([cat, val]) => {
-    impacto += Number(val) * pesos[cat];
+  Object.values(ficha.categorias).forEach(data => {
+    const nivel = Number(data.nivel ?? data);
+
+    if (nivel < 2) return;
+
+    const presencia = data.presencia || "puntual";
+
+    if (nivel === 2) fc -= presencia === "continuado" ? 1 : 0.5;
+    if (nivel === 3) fc -= presencia === "continuado" ? 2 : 1;
   });
 
-  const edad = impacto >= 8 ? 16 : impacto >= 3 ? 12 : 7;
-  const fc = Math.max(1, 10 - impacto);
+  fc = Math.round(fc);
+  fc = Math.max(1, Math.min(10, fc));
+
+  let edad;
+  if (fc >= 8) edad = 7;
+  else if (fc >= 6) edad = 12;
+  else edad = 16;
 
   return { edad, fc };
 }
+
 
 function renderListado() {
   const contenedor = document.getElementById("resultadoListado");
@@ -446,6 +511,7 @@ function renderListado() {
 
 </body>
 </html>
+
 
 
 

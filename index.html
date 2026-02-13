@@ -3,83 +3,148 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Familycambio</title>
-<h1>correcto</h1>
+<title>FamilyCheck</title>
+
 <style>
-body {
-  font-family: system-ui, sans-serif;
-  background: #f7f7f7;
-  margin: 0;
-  padding: 16px;
-}
-h1 { font-size: 1.4rem; }
-
-.card {
-  background: #fff;
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 16px;
+:root{
+  --bg:#121212;
+  --card:#1c1c1c;
+  --border:#2a2a2a;
+  --text:#e0e0e0;
+  --muted:#9e9e9e;
+  --accent:#f5c518; /* IMDb yellow */
+  --blue:#5799ef;
+  --danger:#e53935;
 }
 
-label {
-  font-weight: 600;
-  display: block;
-  margin-top: 12px;
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  padding:16px;
+  background:var(--bg);
+  color:var(--text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-input, select {
-  width: 100%;
-  padding: 8px;
-  margin-top: 4px;
+h1{
+  font-size:1.3rem;
+  margin-bottom:16px;
+  font-weight:600;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: 1fr repeat(4, 50px);
-  gap: 6px;
-  align-items: center;
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:16px;
+  margin-bottom:16px;
 }
 
-.radio {
-  text-align: center;
+label{
+  display:block;
+  margin-top:12px;
+  font-size:0.85rem;
+  color:var(--muted);
 }
 
-.presencia {
-  grid-column: 1 / -1;
-  font-size: 0.85rem;
-  margin-left: 6px;
-  display: none;
+input,select{
+  width:100%;
+  margin-top:6px;
+  padding:8px 10px;
+  border-radius:4px;
+  border:1px solid var(--border);
+  background:#181818;
+  color:var(--text);
 }
 
-.result {
-  background: #eef6ff;
-  padding: 12px;
-  border-radius: 6px;
-  font-weight: 600;
+input:focus,select:focus{
+  outline:none;
+  border-color:var(--accent);
 }
 
-button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  background: #0066cc;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
+.grid{
+  display:grid;
+  grid-template-columns: 1.2fr repeat(4, 44px);
+  gap:6px;
+  align-items:center;
+  font-size:0.85rem;
 }
 
-.list-item {
-  display: flex;
-  justify-content: space-between;
-  border-bottom: 1px solid #eee;
-  padding: 8px 0;
+.grid strong{
+  font-weight:500;
+  color:#fff;
+}
+
+.radio{
+  text-align:center;
+}
+
+.presencia{
+  grid-column:1/-1;
+  margin-left:4px;
+  margin-top:4px;
+  font-size:0.75rem;
+  color:var(--muted);
+  display:none;
+}
+
+.result{
+  border-radius:6px;
+  padding:12px;
+  font-weight:600;
+  background:#181818;
+  border:1px solid var(--border);
+}
+
+.fcA{color:#7ddc8a}
+.fcB{color:var(--blue)}
+.fcC{color:#ffb74d}
+.fcD{color:var(--danger)}
+
+button{
+  width:100%;
+  margin-top:10px;
+  padding:12px;
+  border:none;
+  border-radius:6px;
+  background:var(--accent);
+  color:#000;
+  font-weight:600;
+  cursor:pointer;
+}
+
+button.secondary{
+  background:#2a2a2a;
+  color:var(--text);
+}
+
+.list-item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 0;
+  border-bottom:1px solid var(--border);
+  font-size:0.9rem;
+}
+
+.list-item small{
+  color:var(--muted);
+}
+
+.trash{
+  background:none;
+  border:none;
+  color:var(--danger);
+  font-size:1.1rem;
+  cursor:pointer;
 }
 </style>
 </head>
 
 <body>
 
-<h1>➕ Añadir ficha – FamilyCheck</h1>
+<h1>➕ Añadir ficha · FamilyCheck</h1>
 
 <div class="card">
   <label>Tipo</label>
@@ -99,39 +164,36 @@ button {
 </div>
 
 <div class="card">
-  <h2>Evaluación de contenido</h2>
-
   <div class="grid">
     <strong></strong>
-    <strong>Nada</strong><strong>Leve</strong><strong>Mod.</strong><strong>Sev.</strong>
+    <strong>N</strong><strong>L</strong><strong>M</strong><strong>S</strong>
 
-    <script>
-    const categorias = ["sexo","violencia","lenguaje","drogas","miedo"];
-    document.write(categorias.map(c => `
-      <strong>${c.charAt(0).toUpperCase()+c.slice(1)}</strong>
-      ${[0,1,2,3].map(v=>`
-        <div class="radio">
-          <input type="radio" name="${c}" value="${v}"
-            ${v===0?"checked":""}
-            onchange="mostrarPresencia('${c}')">
-        </div>`).join("")}
-
-      <div class="presencia" id="pres_${c}">
-        Presencia:
-        <label><input type="radio" name="pres_${c}" value="puntual" checked onchange="actualizar()"> Puntual</label>
-        <label><input type="radio" name="pres_${c}" value="continuado" onchange="actualizar()"> Continuado</label>
-      </div>
-    `).join(""));
-    </script>
+<script>
+const categorias=["sexo","violencia","lenguaje","drogas","miedo"];
+document.write(categorias.map(c=>`
+<strong>${c.charAt(0).toUpperCase()+c.slice(1)}</strong>
+${[0,1,2,3].map(v=>`
+<div class="radio">
+  <input type="radio" name="${c}" value="${v}"
+    ${v===0?"checked":""}
+    onchange="mostrar('${c}')">
+</div>`).join("")}
+<div class="presencia" id="p_${c}">
+  ¿Puntual o continuado?
+  <label><input type="radio" name="pr_${c}" value="puntual" checked onchange="actualizar()"> Puntual</label>
+  <label><input type="radio" name="pr_${c}" value="continuado" onchange="actualizar()"> Continuado</label>
+</div>
+`).join(""));
+</script>
   </div>
 </div>
 
 <div class="result" id="resultado">
-Edad recomendada: — <br> FC: —
+Edad recomendada: —<br>FamilyCheck: —
 </div>
 
 <button onclick="guardar()">Guardar ficha</button>
-<button onclick="toggleListado()">📋 Ver fichas</button>
+<button class="secondary" onclick="toggleListado()">📋 Ver fichas</button>
 
 <div class="card" id="listado" style="display:none;">
   <input id="buscador" placeholder="Buscar..." oninput="renderListado()">
@@ -139,73 +201,75 @@ Edad recomendada: — <br> FC: —
 </div>
 
 <script>
-let estado = {};
+let estado={};
 
-function mostrarPresencia(cat) {
-  const nivel = Number(document.querySelector(`input[name=${cat}]:checked`).value);
-  const bloque = document.getElementById(`pres_${cat}`);
-  bloque.style.display = nivel >= 2 ? "block" : "none";
+function mostrar(cat){
+  const nivel=+document.querySelector(`input[name=${cat}]:checked`).value;
+  document.getElementById(`p_${cat}`).style.display = nivel>=2?"block":"none";
   actualizar();
 }
 
-function actualizar() {
-  categorias.forEach(c => {
-    const nivel = Number(document.querySelector(`input[name=${c}]:checked`).value);
-    if (nivel >= 2) {
-      const pres = document.querySelector(`input[name=pres_${c}]:checked`).value;
-      estado[c] = {nivel, pres};
-    } else estado[c] = {nivel};
+function actualizar(){
+  categorias.forEach(c=>{
+    const n=+document.querySelector(`input[name=${c}]:checked`).value;
+    if(n>=2){
+      const p=document.querySelector(`input[name=pr_${c}]:checked`).value;
+      estado[c]={nivel:n,pres:p};
+    }else estado[c]={nivel:n};
   });
   calcularFC();
 }
 
-function calcularFC() {
-  let fc = 9;
+function calcularFC(){
+  let fc=9;
   Object.values(estado).forEach(d=>{
-    if(d.nivel===2) fc -= d.pres==="continuado"?1:0.5;
-    if(d.nivel===3) fc -= d.pres==="continuado"?2:1;
+    if(d.nivel===2) fc-=d.pres==="continuado"?1:0.5;
+    if(d.nivel===3) fc-=d.pres==="continuado"?2:1;
   });
-  fc = Math.max(1,Math.min(10,Math.round(fc)));
-  let edad = fc>=8?7:fc>=6?12:16;
-  resultado.innerHTML = `Edad recomendada: ${edad}+<br>FC: ${fc}/10`;
+  fc=Math.max(1,Math.min(10,Math.round(fc)));
+  let edad=fc>=8?7:fc>=6?12:16;
+  let clase=fc>=9?"fcA":fc>=7?"fcB":fc>=4?"fcC":"fcD";
+  resultado.innerHTML=`Edad recomendada: ${edad}+<br>FamilyCheck: <span class="${clase}">${fc}/10</span>`;
 }
 
-function guardar() {
-  const ficha = {
-    id: crypto.randomUUID(),
-    tipo: tipo.value,
-    titulo: titulo.value,
-    extra1: extra1.value,
-    extra2: extra2.value,
+function guardar(){
+  const f={
+    id:crypto.randomUUID(),
+    titulo:titulo.value,
+    extra1:extra1.value,
+    extra2:extra2.value,
     estado
   };
-  const data = JSON.parse(localStorage.getItem("fc")||"[]");
-  if(data.some(f=>f.titulo.toLowerCase()===ficha.titulo.toLowerCase())) {
+  let data=JSON.parse(localStorage.getItem("fc")||"[]");
+  if(data.some(x=>x.titulo.toLowerCase()===f.titulo.toLowerCase())){
     alert("Ya existe");
     return;
   }
-  data.push(ficha);
+  data.push(f);
   localStorage.setItem("fc",JSON.stringify(data));
-  alert("Guardada");
+  alert("Ficha guardada");
 }
 
 function toggleListado(){
-  listado.style.display = listado.style.display==="none"?"block":"none";
+  listado.style.display=listado.style.display==="none"?"block":"none";
   renderListado();
 }
 
 function renderListado(){
-  const data = JSON.parse(localStorage.getItem("fc")||"[]");
-  resultadoListado.innerHTML = data.map(f=>`
-    <div class="list-item">
-      <div><strong>${f.titulo}</strong><br>${f.extra1} · ${f.extra2}</div>
-      <button onclick="borrar('${f.id}')">🗑</button>
-    </div>`).join("");
+  const data=JSON.parse(localStorage.getItem("fc")||"[]");
+  resultadoListado.innerHTML=data.map(f=>`
+<div class="list-item">
+  <div>
+    <strong>${f.titulo}</strong><br>
+    <small>${f.extra1} · ${f.extra2}</small>
+  </div>
+  <button class="trash" onclick="borrar('${f.id}')">🗑</button>
+</div>`).join("");
 }
 
 function borrar(id){
-  let data = JSON.parse(localStorage.getItem("fc")||"[]");
-  data = data.filter(f=>f.id!==id);
+  let data=JSON.parse(localStorage.getItem("fc")||"[]");
+  data=data.filter(f=>f.id!==id);
   localStorage.setItem("fc",JSON.stringify(data));
   renderListado();
 }

@@ -61,6 +61,18 @@ button {
   border-radius: 6px;
   margin-top: 16px;
 }
+.categoria-bloque {
+  margin-bottom: 12px;
+}
+
+.presencia {
+  display: none;
+  font-size: 0.9rem;
+  margin-left: 8px;
+  margin-top: 4px;
+  color: #444;
+}
+
 </style>
 </head>
 
@@ -94,34 +106,40 @@ button {
 <script>
 const categorias = ["sexo","violencia","lenguaje","drogas","miedo"];
 document.write(categorias.map(c => `
-<strong>${c.charAt(0).toUpperCase() + c.slice(1)}</strong>
+<div class="categoria-bloque">
 
-<div class="radio-group">
-  <input type="radio" name="${c}" value="0" checked onchange="actualizarCategoriasEstado()">
-</div>
-<div class="radio-group">
-  <input type="radio" name="${c}" value="1" onchange="actualizarCategoriasEstado()">
-</div>
-<div class="radio-group">
-  <input type="radio" name="${c}" value="2" onchange="mostrarPresencia('${c}')">
-</div>
-<div class="radio-group">
-  <input type="radio" name="${c}" value="3" onchange="mostrarPresencia('${c}')">
-</div>
+  <div class="grid">
+    <strong>${c.charAt(0).toUpperCase() + c.slice(1)}</strong>
 
-<div id="presencia_${c}"
-     style="grid-column:1 / -1;display:none;font-size:0.9rem;margin-bottom:6px;">
-  Presencia:
-  <label>
-    <input type="radio" name="presencia_${c}" value="puntual" checked>
-    Puntual
-  </label>
-  <label style="margin-left:12px;">
-    <input type="radio" name="presencia_${c}" value="continuado">
-    Continuado
-  </label>
+    <div class="radio-group">
+      <input type="radio" name="${c}" value="0" checked onchange="actualizarCategoriasEstado()">
+    </div>
+    <div class="radio-group">
+      <input type="radio" name="${c}" value="1" onchange="actualizarCategoriasEstado()">
+    </div>
+    <div class="radio-group">
+      <input type="radio" name="${c}" value="2" onchange="mostrarPresencia('${c}')">
+    </div>
+    <div class="radio-group">
+      <input type="radio" name="${c}" value="3" onchange="mostrarPresencia('${c}')">
+    </div>
+  </div>
+
+  <div id="presencia_${c}" class="presencia">
+    Presencia:
+    <label>
+      <input type="radio" name="presencia_${c}" value="puntual" checked onchange="actualizarCategoriasEstado()">
+      Puntual
+    </label>
+    <label style="margin-left:12px;">
+      <input type="radio" name="presencia_${c}" value="continuado" onchange="actualizarCategoriasEstado()">
+      Continuado
+    </label>
+  </div>
+
 </div>
 `).join(""));
+
 
 
 </script>
@@ -217,6 +235,7 @@ function mostrarPresencia(cat) {
 
   actualizarCategoriasEstado();
 }
+
 
 function calcularFC() {
   // FC base: contenido familiar mainstream

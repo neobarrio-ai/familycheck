@@ -84,34 +84,79 @@ body{
 
 <body>
 
-<div class="container">
-
+<header class="hero">
   <img src="assets/logo.png" alt="FamilyCheck" class="logo">
 
-  <div class="subtitle">
-    ¿Es adecuado para tus hijos?
+  <p class="tagline">¿Es adecuado para tus hijos?</p>
+
+  <div class="search-box">
+    <input type="text" placeholder="Busca una película, serie o libro…">
+    <button>Buscar</button>
   </div>
 
-  <input
-    type="text"
-    class="search"
-    placeholder="Buscar película, serie o libro…"
-    disabled
-  >
-
-  <button class="primary" onclick="location.href='add.html'">
-    ➕ Añadir ficha
+  <button class="add-btn" onclick="location.href='add.html'">
+    + Añadir ficha
   </button>
+</header>
 
-  <div class="section">
-    <h3>Últimos contenidos añadidos</h3>
+<main class="home-content">
 
-    <div class="card">Superman (2025) · FC 8 · 12+</div>
-    <div class="card">Harry Potter · FC 9 · 7+</div>
-    <div class="card">El Hobbit · FC 8 · 7+</div>
-  </div>
+  <section>
+    <h2>🎬 Últimas películas</h2>
+    <div class="cards">
+      <div class="card">
+        <strong>Superman (2025)</strong>
+        <span class="meta fc-b">FC 8 · 12+</span>
+      </div>
+      <div class="card">
+        <strong>Frozen</strong>
+        <span class="meta fc-a">FC 9 · 7+</span>
+      </div>
+      <div class="card">
+        <strong>Joker</strong>
+        <span class="meta fc-c">FC 5 · 16+</span>
+      </div>
+    </div>
+  </section>
 
-</div>
+  <section>
+    <h2>📺 Últimas series</h2>
+    <div class="cards">
+      <div class="card">
+        <strong>Stranger Things</strong>
+        <span class="meta fc-b">FC 8 · 12+</span>
+      </div>
+      <div class="card">
+        <strong>The Mandalorian</strong>
+        <span class="meta fc-b">FC 7 · 7+</span>
+      </div>
+      <div class="card">
+        <strong>Bridgerton</strong>
+        <span class="meta fc-c">FC 4 · 16+</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>📚 Últimos libros</h2>
+    <div class="cards">
+      <div class="card">
+        <strong>Harry Potter</strong>
+        <span class="meta fc-a">FC 9 · 7+</span>
+      </div>
+      <div class="card">
+        <strong>Los Juegos del Hambre</strong>
+        <span class="meta fc-b">FC 7 · 12+</span>
+      </div>
+      <div class="card">
+        <strong>1984</strong>
+        <span class="meta fc-c">FC 6 · 16+</span>
+      </div>
+    </div>
+  </section>
+
+</main>
 
 </body>
 </html>
+

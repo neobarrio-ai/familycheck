@@ -3,76 +3,107 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FamilyCheck – Añadir ficha</title>
+<title>FamilyCheck</title>
 
 <style>
+:root {
+  --verde: #2e7d32;
+  --azul: #1565c0;
+  --naranja: #ef6c00;
+  --rojo: #c62828;
+  --fondo: #f5f7fa;
+  --card: #ffffff;
+  --borde: #e0e0e0;
+}
+
 body {
-  font-family: system-ui, sans-serif;
-  background: #f7f7f7;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--fondo);
   margin: 0;
   padding: 16px;
+  color: #222;
 }
+
 h1 {
   font-size: 1.4rem;
-}
-.card {
-  background: #fff;
-  padding: 16px;
-  border-radius: 8px;
   margin-bottom: 16px;
 }
+
+.card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
 label {
   font-weight: 600;
   display: block;
   margin-top: 12px;
 }
-input, textarea, select {
+
+input, select {
   width: 100%;
   padding: 10px;
-  margin-top: 4px;
+  margin-top: 6px;
   font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--borde);
 }
-.grid {
-  display: grid;
-  grid-template-columns: 1fr repeat(4, 70px);
-  gap: 8px;
-  align-items: center;
+
+.categoria {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--borde);
 }
-.grid strong {
-  font-size: 0.9rem;
+
+.categoria:last-child {
+  border-bottom: none;
 }
-.radio-group {
-  text-align: center;
-}
-.result {
-  background: #eef6ff;
-  padding: 12px;
-  border-radius: 6px;
-  margin-top: 12px;
+
+.cabecera {
   font-weight: 600;
+  margin-bottom: 6px;
 }
-button {
-  width: 100%;
-  padding: 14px;
-  font-size: 1rem;
-  background: #0066cc;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  margin-top: 16px;
+
+.opciones {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
 }
-.categoria-bloque {
-  margin-bottom: 12px;
+
+.opciones label {
+  font-weight: normal;
+  font-size: 0.9rem;
 }
 
 .presencia {
+  margin-top: 6px;
+  font-size: 0.85rem;
   display: none;
-  font-size: 0.9rem;
-  margin-left: 8px;
-  margin-top: 4px;
-  color: #444;
 }
 
+.resultado {
+  padding: 16px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.A { background:#e8f5e9; color:var(--verde); }
+.B { background:#e3f2fd; color:var(--azul); }
+.C { background:#fff3e0; color:var(--naranja); }
+.D { background:#ffebee; color:var(--rojo); }
+
+button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 16px;
+  border-radius: 10px;
+  border: none;
+  font-size: 1rem;
+  background: var(--azul);
+  color: #fff;
+}
 </style>
 </head>
 
@@ -81,461 +112,105 @@ button {
 <h1>➕ Añadir ficha – FamilyCheck</h1>
 
 <div class="card">
-<label>Tipo de contenido</label>
-<select id="tipo">
-  <option value="pelicula">Película</option>
-  <option value="libro">Libro</option>
-</select>
-
-<label>Título</label>
-<input id="titulo">
-
-<label id="campoExtra1">Año</label>
-<input id="extra1">
-
-<label id="campoExtra2">Director</label>
-<input id="extra2">
+  <label>Título</label>
+  <input id="titulo">
 </div>
 
-<div class="card">
-<h2>Evaluación de contenido</h2>
+<div class="card" id="evaluacion"></div>
 
-<div class="grid">
-<strong></strong><strong>Nada</strong><strong>Leve</strong><strong>Mod.</strong><strong>Sev.</strong>
-
-<script>
-const categorias = ["sexo","violencia","lenguaje","drogas","miedo"];
-document.write(categorias.map(c => `
-<div class="categoria-bloque">
-
-  <div class="grid">
-    <strong>${c.charAt(0).toUpperCase() + c.slice(1)}</strong>
-
-    <div class="radio-group">
-      <input type="radio" name="${c}" value="0" checked onchange="actualizarCategoriasEstado()">
-    </div>
-    <div class="radio-group">
-      <input type="radio" name="${c}" value="1" onchange="actualizarCategoriasEstado()">
-    </div>
-    <div class="radio-group">
-      <input type="radio" name="${c}" value="2" onchange="mostrarPresencia('${c}')">
-    </div>
-    <div class="radio-group">
-      <input type="radio" name="${c}" value="3" onchange="mostrarPresencia('${c}')">
-    </div>
-  </div>
-
-  <div id="presencia_${c}" class="presencia">
-    Presencia:
-    <label>
-      <input type="radio" name="presencia_${c}" value="puntual" checked onchange="actualizarCategoriasEstado()">
-      Puntual
-    </label>
-    <label style="margin-left:12px;">
-      <input type="radio" name="presencia_${c}" value="continuado" onchange="actualizarCategoriasEstado()">
-      Continuado
-    </label>
-  </div>
-
-</div>
-`).join(""));
-
-
-
-</script>
-
-</div>
-</div>
-
-<div class="card">
-  <label>📝 Comentarios por categoría</label>
-
-  <select id="comentarioCategoria">
-    <option value="">(elige categoría)</option>
-    <option value="sexo">Sexo y desnudos</option>
-    <option value="violencia">Violencia</option>
-    <option value="lenguaje">Lenguaje</option>
-    <option value="drogas">Alcohol y drogas</option>
-    <option value="miedo">Miedo / impacto emocional</option>
-  </select>
-
-  <textarea
-    id="comentarioTexto"
-    rows="2"
-    placeholder="Comentario breve sobre esta categoría"
-    style="margin-top:8px;"
-  ></textarea>
-
-  <button type="button"
-          onclick="confirmarComentario()"
-          style="margin-top:8px;background:#ddd;color:#000;">
-    OK
-  </button>
-
-  <div id="comentariosConfirmados"
-       style="margin-top:8px;font-size:0.9rem;color:#555;"></div>
-</div>
-
-
-
-<div class="result" id="resultado">
-Edad recomendada: —<br>
-Índice FamilyCheck (FC): —
-</div>
-
-<button onclick="guardar()">Guardar ficha</button>
-<button onclick="exportar()">📤 Exportar fichas</button>
-<button onclick="toggleListado()">📋 Ver fichas</button>
-
-<label style="display:block;margin-top:12px;">
-  <input type="file" accept=".json" onchange="importar(event)">
-</label>
-</div>
-<div class="card" id="listado" style="display:none;">
-  <h2>Fichas guardadas</h2>
-
-  <input
-    type="text"
-    id="buscador"
-    placeholder="Buscar por título, director o ISBN"
-    oninput="renderListado()"
-  >
-
-  <div id="resultadoListado"></div>
+<div class="resultado A" id="resultado">
+  Edad recomendada: —<br>
+  FamilyCheck: —
 </div>
 
 <script>
-let comentariosTemp = {};
-let categoriasEstado = {};
-function actualizarCategoriasEstado() {
-  categorias.forEach(c => {
-    const nivel = Number(document.querySelector(`input[name=${c}]:checked`).value);
+const categorias = [
+  { id:"sexo", nombre:"Sexo y desnudos" },
+  { id:"violencia", nombre:"Violencia" },
+  { id:"lenguaje", nombre:"Lenguaje" },
+  { id:"drogas", nombre:"Alcohol y drogas" },
+  { id:"miedo", nombre:"Miedo / impacto emocional" }
+];
 
-    if (nivel >= 2) {
-      const presencia = document.querySelector(`input[name=presencia_${c}]:checked`).value;
-      categoriasEstado[c] = { nivel, presencia };
-    } else {
-      categoriasEstado[c] = { nivel };
-    }
-  });
+let estado = {};
+
+const contenedor = document.getElementById("evaluacion");
+
+categorias.forEach(cat => {
+  contenedor.innerHTML += `
+    <div class="categoria">
+      <div class="cabecera">${cat.nombre}</div>
+      <div class="opciones">
+        ${["Nada","Leve","Mod.","Sev."].map((txt,i) => `
+          <label>
+            <input type="radio" name="${cat.id}" value="${i}"
+              ${i===0?"checked":""}
+              onchange="actualizar('${cat.id}')">
+            ${txt}
+          </label>
+        `).join("")}
+      </div>
+
+      <div class="presencia" id="pres_${cat.id}">
+        Presencia:
+        <label>
+          <input type="radio" name="pres_${cat.id}" value="puntual" checked
+            onchange="actualizar('${cat.id}')">
+          Puntual
+        </label>
+        <label>
+          <input type="radio" name="pres_${cat.id}" value="continuado"
+            onchange="actualizar('${cat.id}')">
+          Continuado
+        </label>
+      </div>
+    </div>
+  `;
+});
+
+function actualizar(cat) {
+  const nivel = Number(document.querySelector(`input[name=${cat}]:checked`).value);
+  const pres = document.getElementById(`pres_${cat}`);
+
+  if (nivel >= 2) {
+    pres.style.display = "block";
+    const p = document.querySelector(`input[name=pres_${cat}]:checked`).value;
+    estado[cat] = { nivel, presencia: p };
+  } else {
+    pres.style.display = "none";
+    estado[cat] = { nivel };
+  }
 
   calcularFC();
 }
 
-
-function mostrarPresencia(cat) {
-  const nivel = Number(document.querySelector(`input[name=${cat}]:checked`).value);
-  const bloque = document.getElementById(`presencia_${cat}`);
-
-  if (nivel >= 2) {
-    bloque.style.display = "block";
-  } else {
-    bloque.style.display = "none";
-  }
-
-  actualizarCategoriasEstado();
-}
-
-
 function calcularFC() {
-  // FC base: contenido familiar mainstream
   let fc = 9;
 
-  categorias.forEach(cat => {
-    const data = categoriasEstado[cat];
-    const nivel = data.nivel;
-
-    // Leve o Nada no penalizan
-    if (nivel < 2) return;
-
-    const presencia = data.presencia || "puntual";
-
-    if (nivel === 2) {
-      // Moderado
-      fc -= presencia === "continuado" ? 1 : 0.5;
-    }
-
-    if (nivel === 3) {
-      // Severo
-      fc -= presencia === "continuado" ? 2 : 1;
-    }
+  Object.values(estado).forEach(d => {
+    if (d.nivel === 2) fc -= d.presencia==="continuado" ? 1 : 0.5;
+    if (d.nivel === 3) fc -= d.presencia==="continuado" ? 2 : 1;
   });
 
-  // Ajustes finales
-  fc = Math.round(fc);
-  fc = Math.max(1, Math.min(10, fc));
+  fc = Math.round(Math.max(1, Math.min(10, fc)));
 
-  // Edad recomendada orientativa
-  let edad;
-  if (fc >= 8) edad = 7;
-  else if (fc >= 6) edad = 12;
-  else edad = 16;
+  let letra = "A", clase="A", edad=7;
+  if (fc <= 3) { letra="D"; clase="D"; edad=16; }
+  else if (fc <= 6) { letra="C"; clase="C"; edad=12; }
+  else if (fc <= 8) { letra="B"; clase="B"; edad=12; }
 
-  // Letra + color
-  let letra = "A";
-  let clase = "fc-A";
-
-  if (fc <= 3) {
-    letra = "D";
-    clase = "fc-D";
-  } else if (fc <= 6) {
-    letra = "C";
-    clase = "fc-C";
-  } else if (fc <= 8) {
-    letra = "B";
-    clase = "fc-B";
-  }
-
-  // Mostrar resultado
-  const resultado = document.getElementById("resultado");
-  resultado.className = `result ${clase}`;
-  resultado.innerHTML = `
+  const r = document.getElementById("resultado");
+  r.className = `resultado ${clase}`;
+  r.innerHTML = `
     Edad recomendada: ${edad}+<br>
     FamilyCheck: <strong>${letra}</strong> · FC ${fc}/10
   `;
 }
 
-
-document.querySelectorAll("input[type=radio]").forEach(r => r.addEventListener("change", calcular));
-calcular();
-
-function guardar() {
-  const ficha = {
-  id: crypto.randomUUID(),
-  tipo: tipo.value,
-  titulo: titulo.value,
-  extra1: extra1.value,
-  extra2: extra2.value,
-  comentarios: comentariosTemp,
-  categorias: categoriasEstado
-
-};
-
-  const data = JSON.parse(localStorage.getItem("familycheck") || "[]");
-  const existe = data.some(f =>
-  f.tipo === tipo.value &&
-  f.titulo.trim().toLowerCase() === titulo.value.trim().toLowerCase() &&
-  f.extra1.trim() === extra1.value.trim() &&
-  f.extra2.trim().toLowerCase() === extra2.value.trim().toLowerCase()
-);
-
-if (existe) {
-  alert("⚠️ Esta ficha ya existe");
-  return;
-}
-
-  data.push(ficha);
-  localStorage.setItem("familycheck", JSON.stringify(data));
-  comentariosTemp = {};
-renderComentariosConfirmados();
-
-  alert("Ficha guardada");
-}
-function confirmarComentario() {
-  const categoria = document.getElementById("comentarioCategoria").value;
-  const texto = document.getElementById("comentarioTexto").value.trim();
-
-  if (!categoria || !texto) {
-    alert("Selecciona una categoría y escribe un comentario");
-    return;
-  }
-
-  comentariosTemp[categoria] = texto;
-
-  document.getElementById("comentarioCategoria").value = "";
-  document.getElementById("comentarioTexto").value = "";
-
-  renderComentariosConfirmados();
-}
-
-function renderComentariosConfirmados() {
-  const contenedor = document.getElementById("comentariosConfirmados");
-
-  if (Object.keys(comentariosTemp).length === 0) {
-    contenedor.innerText = "";
-    return;
-  }
-
-  contenedor.innerHTML =
-    "✔ Comentarios añadidos:<br>" +
-    Object.entries(comentariosTemp)
-      .map(([cat, txt]) => `• <strong>${cat}</strong>: ${txt}`)
-      .join("<br>");
-}
-
-function exportar() {
-  const data = localStorage.getItem("familycheck");
-  if (!data) {
-    alert("No hay fichas para exportar");
-    return;
-  }
-
-  const blob = new Blob([data], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "familycheck_fichas.json";
-  a.click();
-
-  URL.revokeObjectURL(url);
-}
-
-function importar(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const nuevas = JSON.parse(e.target.result);
-      const existentes = JSON.parse(localStorage.getItem("familycheck") || "[]");
-
-      const ids = new Set(existentes.map(f => f.id));
-      const filtradas = nuevas.filter(f => !ids.has(f.id));
-
-      const combinadas = [...existentes, ...filtradas];
-      localStorage.setItem("familycheck", JSON.stringify(combinadas));
-
-      alert(`Importadas ${filtradas.length} fichas`);
-    } catch (e) {
-      alert("Archivo no válido");
-    }
-  };
-  reader.readAsText(file);
-}
-function toggleListado() {
-  const listado = document.getElementById("listado");
-  listado.style.display = listado.style.display === "none" ? "block" : "none";
-  renderListado();
-}
-function borrarFicha(id) {
-  if (!confirm("¿Seguro que quieres borrar esta ficha?")) return;
-
-  const data = JSON.parse(localStorage.getItem("familycheck") || "[]");
-  const filtradas = data.filter(f => f.id !== id);
-
-  localStorage.setItem("familycheck", JSON.stringify(filtradas));
-  renderListado();
-}
-function calcularFCDesdeFicha(ficha) {
-  let fc = 9;
-
-  Object.values(ficha.categorias).forEach(data => {
-    const nivel = Number(data.nivel ?? data);
-
-    if (nivel < 2) return;
-
-    const presencia = data.presencia || "puntual";
-
-    if (nivel === 2) fc -= presencia === "continuado" ? 1 : 0.5;
-    if (nivel === 3) fc -= presencia === "continuado" ? 2 : 1;
-  });
-
-  fc = Math.round(fc);
-  fc = Math.max(1, Math.min(10, fc));
-
-  let edad;
-  if (fc >= 8) edad = 7;
-  else if (fc >= 6) edad = 12;
-  else edad = 16;
-
-  return { edad, fc };
-}
-
-
-function renderListado() {
-  const contenedor = document.getElementById("resultadoListado");
-  const texto = document.getElementById("buscador").value.toLowerCase();
-  const data = JSON.parse(localStorage.getItem("familycheck") || "[]");
-
-  const peliculas = data.filter(f =>
-    f.tipo === "pelicula" &&
-    (
-      f.titulo.toLowerCase().includes(texto) ||
-      f.extra2.toLowerCase().includes(texto) // director
-    )
-  );
-
-  const libros = data.filter(f =>
-    f.tipo === "libro" &&
-    (
-      f.titulo.toLowerCase().includes(texto) ||
-      f.extra2.toLowerCase().includes(texto) // ISBN
-    )
-  );
-
-  let html = "";
-
-  if (peliculas.length) {
-    html += "<h3>🎬 Películas</h3>";
-    peliculas.forEach(f => {
-  const { edad, fc } = calcularFCDesdeFicha(f);
-
-  html += `
-    <div style="padding:8px 0;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;">
-      <div>
-        <strong>${f.titulo}</strong><br>
-        ${f.extra1} · ${f.extra2}<br>
-        <small>Edad: ${edad}+ · FC: ${fc}/10</small>
-      </div>
-
-      <button
-        onclick="borrarFicha('${f.id}')"
-        title="Borrar ficha"
-        style="background:none;color:#c62828;border:none;font-size:1.1rem;cursor:pointer;">
-        🗑
-      </button>
-    </div>
-  `;
-});
-
-
-  }
-
-  if (libros.length) {
-    html += "<h3>📚 Libros</h3>";
-    libros.forEach(f => {
-  const { edad, fc } = calcularFCDesdeFicha(f);
-
-  html += `
-    <div style="padding:8px 0;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;">
-      <div>
-        <strong>${f.titulo}</strong><br>
-        ${f.extra1} · ISBN ${f.extra2}<br>
-        <small>Edad: ${edad}+ · FC: ${fc}/10</small>
-      </div>
-
-      <button
-        onclick="borrarFicha('${f.id}')"
-        title="Borrar ficha"
-        style="background:none;color:#c62828;border:none;font-size:1.1rem;cursor:pointer;">
-        🗑
-      </button>
-    </div>
-  `;
-});
-
-
-  }
-
-  if (!peliculas.length && !libros.length) {
-    html = "<em>No hay resultados</em>";
-  }
-
-  contenedor.innerHTML = html;
-}
-
+// Inicializar
+categorias.forEach(c => estado[c.id]={nivel:0});
+calcularFC();
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-

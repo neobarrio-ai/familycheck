@@ -3,160 +3,284 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FamilyCheck</title>
+<title>FamilyCheck – Home Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
 :root{
-  --bg:#2a2f2f;
-  --card:#313737;
-  --border:#3f4646;
-  --text:#e6e6e6;
-  --muted:#b0b8b8;
+  --bg:#1e2323;
+  --bg-soft:#262c2c;
+  --card:#2f3535;
+  --border:#3b4242;
+  --text:#e8eaea;
+  --muted:#aab3b3;
   --accent:#6fc2b1;
 }
 
+*{box-sizing:border-box}
+
 body{
   margin:0;
-  font-family:system-ui, sans-serif;
-  background:var(--bg);
+  font-family:'Inter', system-ui, sans-serif;
+  background:
+    radial-gradient(1200px 500px at top center,#2c3333 0%,#1b1f1f 55%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
   color:var(--text);
 }
 
+
 .container{
-  max-width:900px;
+  max-width:1100px;
   margin:auto;
-  padding:40px 16px;
+  padding:32px 16px 80px;
+}
+
+/* HERO */
+.hero{
   text-align:center;
+  margin-bottom:48px;
 }
 
 .logo{
-  max-width:280px;
+  max-width:520px;   /* mismo ancho que la search */
   width:100%;
-  margin:0 auto 12px;
+  display:block;
+  margin:0 auto 6px; /* menos espacio abajo */
+  filter: drop-shadow(0 8px 20px rgba(0,0,0,.45));
+}
+@media (max-width:480px){
+  .logo{
+    max-width:420px;
+    margin-bottom:6px;
+  }
+
+  .tagline{
+    margin-top:-2px;
+    margin-bottom:18px;
+    font-size:1.05rem;
+  }
 }
 
-.subtitle{
+.tagline{
   color:var(--muted);
-  margin-bottom:32px;
+  margin-top:-4px;   /* la sube visualmente */
+  margin-bottom:22px;
   font-size:1.1rem;
+  font-weight:500;
 }
 
-.search{
-  width:100%;
+
+/* SEARCH */
+.search-row{
+  display:flex;
+  max-width:520px;
+  margin:0 auto 20px;
+}
+
+.search-row input{
+  flex:1;
   padding:14px;
-  font-size:1.1rem;
-  border-radius:8px;
+  font-size:1rem;
+  border-radius:6px 0 0 6px;
   border:1px solid var(--border);
-  background:#232828;
+  background:#1a1f1f;
   color:var(--text);
 }
 
-.primary{
-  margin-top:24px;
-  padding:14px;
-  width:100%;
-  font-size:1.1rem;
-  background:var(--accent);
+.search-row button{
+  padding:14px 20px;
   border:none;
-  border-radius:8px;
-  color:#000;
+  background:var(--accent);
+  color:#0b1413;
+  font-weight:600;
+  border-radius:0 6px 6px 0;
   cursor:pointer;
 }
 
-.primary:hover{
-  opacity:.9;
+/* ADD */
+.add-btn{
+  background:none;
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:10px 18px;
+  border-radius:6px;
+  cursor:pointer;
+}
+.add-btn:hover{
+  background:var(--bg-soft);
 }
 
+/* SECTIONS */
 .section{
   margin-top:48px;
-  text-align:left;
+}
+
+.section h2{
+  font-size:1.2rem;
+  margin-bottom:16px;
+}
+
+/* CARDS */
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:16px;
 }
 
 .card{
-  background:var(--card);
-  border:1px solid var(--border);
-  padding:12px;
-  border-radius:8px;
-  margin-bottom:12px;
+  background:
+    linear-gradient(180deg,#323838,#2a3030);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:10px;
+  padding:16px;
+  box-shadow:
+    0 10px 30px rgba(0,0,0,.35),
+    inset 0 1px 0 rgba(255,255,255,.03);
 }
+
+
+.card-title{
+  font-weight:600;
+  margin-bottom:6px;
+}
+
+.card-meta{
+  margin-top:4px;
+  font-weight:600;
+}
+  
+.card:hover{
+  transform: translateY(-2px);
+  box-shadow:
+    0 14px 40px rgba(0,0,0,.45),
+    inset 0 1px 0 rgba(255,255,255,.05);
+}
+
+
+/* FC BADGES */
+.fc-a{color:#7fdcc8}
+.fc-b{color:#9ad3c5}
+.fc-c{color:#e6c36a}
+.fc-d{color:#e07a7a}
+
+/* FOOTER */
+.footer{
+  text-align:center;
+  color:var(--muted);
+  font-size:.85rem;
+  margin-top:80px;
+}
+  .tagline{
+  font-size:1.15rem;
+  font-weight:500;
+}
+
+.section h2{
+  font-weight:600;
+  letter-spacing:.2px;
+}
+
+.card-title{
+  font-weight:600;
+}
+/* FC hierarchy – HOME */
+.card-meta{
+  display:flex;
+  align-items:baseline;
+  gap:12px;
+  margin-top:4px;
+}
+
+.fc-score{
+  font-size:1.2rem;
+  font-weight:700;
+  letter-spacing:.4px;
+}
+
+.age{
+  font-size:.85rem;
+  font-weight:600;
+  color:var(--muted);
+}
+
 </style>
 </head>
 
 <body>
 
-<header class="hero">
-  <img src="assets/logo.png" alt="FamilyCheck" class="logo">
+<div class="container">
 
-  <p class="tagline">¿Es adecuado para tus hijos?</p>
+  <header class="hero">
+    <img src="assets/logo.png" alt="FamilyCheck" class="logo">
+    <div class="tagline">¿Es adecuado para tus hijos?</div>
 
-  <div class="search-box">
-    <input type="text" placeholder="Busca una película, serie o libro…">
-    <button>Buscar</button>
-  </div>
+    <div class="search-row">
+      <input type="text" placeholder="Busca una película, serie o libro…">
+      <button>Buscar</button>
+    </div>
 
-  <button class="add-btn" onclick="location.href='add.html'">
-    + Añadir ficha
-  </button>
-</header>
+    <button class="add-btn">+ Añadir ficha</button>
+  </header>
 
-<main class="home-content">
-
-  <section>
+  <section class="section">
     <h2>🎬 Últimas películas</h2>
     <div class="cards">
       <div class="card">
-        <strong>Superman (2025)</strong>
-        <span class="meta fc-b">FC 8 · 12+</span>
+        <div class="card-title">Misión Imposible</div>
+        <div class="card-meta fc-b">FC-7   ·   12+</div>
       </div>
       <div class="card">
-        <strong>Frozen</strong>
-        <span class="meta fc-a">FC 9 · 7+</span>
+        <div class="card-title">Frozen</div>
+        <div class="card-meta fc-a">9/10 · 7+</div>
       </div>
       <div class="card">
-        <strong>Joker</strong>
-        <span class="meta fc-c">FC 5 · 16+</span>
+        <div class="card-title">Joker</div>
+        <div class="card-meta fc-d">5/10 · 16+</div>
       </div>
     </div>
   </section>
 
-  <section>
+  <section class="section">
     <h2>📺 Últimas series</h2>
     <div class="cards">
       <div class="card">
-        <strong>Stranger Things</strong>
-        <span class="meta fc-b">FC 8 · 12+</span>
+        <div class="card-title">Stranger Things</div>
+        <div class="card-meta fc-b">8/10 · 12+</div>
       </div>
       <div class="card">
-        <strong>The Mandalorian</strong>
-        <span class="meta fc-b">FC 7 · 7+</span>
+        <div class="card-title">The Mandalorian</div>
+        <div class="card-meta fc-b">7/10 · 7+</div>
       </div>
       <div class="card">
-        <strong>Bridgerton</strong>
-        <span class="meta fc-c">FC 4 · 16+</span>
+        <div class="card-title">Bridgerton</div>
+        <div class="card-meta fc-c">4/10 · 16+</div>
       </div>
     </div>
   </section>
 
-  <section>
+  <section class="section">
     <h2>📚 Últimos libros</h2>
     <div class="cards">
       <div class="card">
-        <strong>Harry Potter</strong>
-        <span class="meta fc-a">FC 9 · 7+</span>
+        <div class="card-title">Harry Potter</div>
+        <div class="card-meta fc-a">9/10 · 7+</div>
       </div>
       <div class="card">
-        <strong>Los Juegos del Hambre</strong>
-        <span class="meta fc-b">FC 7 · 12+</span>
+        <div class="card-title">Los Juegos del Hambre</div>
+        <div class="card-meta fc-b">7/10 · 12+</div>
       </div>
       <div class="card">
-        <strong>1984</strong>
-        <span class="meta fc-c">FC 6 · 16+</span>
+        <div class="card-title">1984</div>
+        <div class="card-meta fc-c">6/10 · 16+</div>
       </div>
     </div>
   </section>
 
-</main>
+  <div class="footer">
+    Evaluaciones independientes · Pensadas para familias
+  </div>
+
+</div>
 
 </body>
 </html>
-

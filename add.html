@@ -173,6 +173,7 @@ const supabaseKey = 'sb_publishable_ea51fJNYUVesmBpSMGzqHw_xhLty22L'
 const sb = supabase.createClient(supabaseUrl, supabaseKey)
 
 let estado={};
+let comentariosPendientes = [];
 
 function mostrar(cat){
   const nivel=+document.querySelector(`input[name=${cat}]:checked`).value;
@@ -216,12 +217,7 @@ function calcularEdad(){
   const fc = calcularFCvalor();
   return fc>=8 ? 7 : fc>=6 ? 12 : 16;
 }
-async function guardarComentario(){
-  if(!window.fichaActualId){
-    alert("Guarda primero la ficha");
-    return;
-  }
-
+  async function guardarComentario(){
   const categoria = document.getElementById("categoriaComentario").value;
   const texto = document.getElementById("textoComentario").value.trim();
 
@@ -230,22 +226,27 @@ async function guardarComentario(){
     return;
   }
 
-  const { error } = await sb
-    .from("comentarios")
-    .insert([{
-      ficha_id: window.fichaActualId,
-      categoria,
-      texto
-    }]);
+  // Si la ficha aún NO está guardada → lo guardamos en memoria
+  if(!window.fichaActualId){
+    comentariosPendientes.push({ categoria, texto });
+    renderComentariosTemporales();
+  } else {
+    // Si ya hay ficha → se guarda directamente en BD
+    const { error } = await sb
+      .from("comentarios")
+      .insert([{ ficha_id: window.fichaActualId, categoria, texto }]);
 
-  if(error){
-    alert(error.message);
-    return;
+    if(error){
+      alert(error.message);
+      return;
+    }
+
+    cargarComentarios();
   }
 
   document.getElementById("textoComentario").value = "";
-  cargarComentarios();
 }
+
 
 async function cargarComentarios(){
   if(!window.fichaActualId) return;
@@ -262,6 +263,15 @@ async function cargarComentarios(){
     data.map(c => `
       <div style="margin-top:6px;font-size:.85rem">
         <strong>${c.categoria}</strong>: ${c.texto}
+      </div>
+    `).join("");
+}
+function renderComentariosTemporales(){
+  document.getElementById("listaComentarios").innerHTML =
+    comentariosPendientes.map(c => `
+      <div style="margin-top:6px;font-size:.85rem;opacity:.7">
+        <strong>${c.categoria}</strong>: ${c.texto}
+        <em style="font-size:.7rem"> (pendiente)</em>
       </div>
     `).join("");
 }
@@ -298,6 +308,18 @@ async function guardar(){
   }
 
   window.fichaActualId = data.id;
+  // Guardar comentarios pendientes
+if(comentariosPendientes.length){
+  await sb.from("comentarios").insert(
+    comentariosPendientes.map(c => ({
+      ficha_id: window.fichaActualId,
+      categoria: c.categoria,
+      texto: c.texto
+    }))
+  );
+  comentariosPendientes = [];
+}
+
   cargarComentarios();
 
   alert("Ficha guardada en Supabase ✅");

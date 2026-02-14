@@ -324,31 +324,6 @@ if(comentariosPendientes.length){
 
   alert("Ficha guardada en Supabase ✅");
 }
-
-
-function toggleListado(){
-  listado.style.display=listado.style.display==="none"?"block":"none";
-  renderListado();
-}
-
-function renderListado(){
-  const data=JSON.parse(localStorage.getItem("fc")||"[]");
-  resultadoListado.innerHTML=data.map(f=>`
-<div class="list-item">
-  <div>
-    <strong>${f.titulo}</strong><br>
-    <small>${f.extra1} · ${f.extra2}</small>
-  </div>
-  <button class="trash" onclick="borrar('${f.id}')">🗑</button>
-</div>`).join("");
-}
-
-function borrar(id){
-  let data=JSON.parse(localStorage.getItem("fc")||"[]");
-  data=data.filter(f=>f.id!==id);
-  localStorage.setItem("fc",JSON.stringify(data));
-  renderListado();
-}
   
 </script>
 
@@ -403,13 +378,6 @@ Edad recomendada: —<br>FamilyCheck: —
 </script>
 
 <button onclick="guardar()">Guardar ficha</button>
-<button class="secondary" onclick="toggleListado()">📋 Ver fichas</button>
-
-<div class="card" id="listado" style="display:none;">
-  <input id="buscador" placeholder="Buscar..." oninput="renderListado()">
-  <div id="resultadoListado"></div>
-</div>
-
 
 
 </body>

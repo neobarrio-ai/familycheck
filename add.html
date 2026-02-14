@@ -231,7 +231,7 @@ async function guardar(){
     isbn: tipoVal === "libro" ? extra1.value || null : null
   };
 
-  const { error } = await supabase
+  const { error } = await sb
     .from("fichas")
     .insert([ficha]);
 

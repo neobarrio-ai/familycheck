@@ -350,7 +350,6 @@ ${[0,1,2,3].map(v=>`
   <label><input type="radio" name="pr_${c}" value="continuado" onchange="actualizar()"> Continuado</label>
 </div>
 `).join(""));
-actualizar();
  
 </script>
   </div>
@@ -377,6 +376,9 @@ actualizar();
 <div class="result" id="resultado">
 Edad recomendada: —<br>FamilyCheck: —
 </div>
+<script>
+  actualizar();
+</script>
 
 <button onclick="guardar()">Guardar ficha</button>
 <button class="secondary" onclick="toggleListado()">📋 Ver fichas</button>

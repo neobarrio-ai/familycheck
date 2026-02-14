@@ -167,7 +167,11 @@ button.secondary{
 </div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const categorias=["sexo","violencia","lenguaje","drogas","miedo"];  
+const categorias=["sexo","violencia","lenguaje","drogas","miedo"];
+const supabaseUrl = 'https://sdjwodswgtxgqirgqlpa.supabase.co'
+const supabaseKey = 'sb_publishable_ea51fJNYUVesmBpSMGzqHw_xhLty22L'
+const sb = supabase.createClient(supabaseUrl, supabaseKey)
+
 let estado={};
 
 function mostrar(cat){
@@ -212,6 +216,56 @@ function calcularEdad(){
   const fc = calcularFCvalor();
   return fc>=8 ? 7 : fc>=6 ? 12 : 16;
 }
+async function guardarComentario(){
+  if(!window.fichaActualId){
+    alert("Guarda primero la ficha");
+    return;
+  }
+
+  const categoria = document.getElementById("categoriaComentario").value;
+  const texto = document.getElementById("textoComentario").value.trim();
+
+  if(!texto){
+    alert("El comentario está vacío");
+    return;
+  }
+
+  const { error } = await sb
+    .from("comentarios")
+    .insert([{
+      ficha_id: window.fichaActualId,
+      categoria,
+      texto
+    }]);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  document.getElementById("textoComentario").value = "";
+  cargarComentarios();
+}
+
+async function cargarComentarios(){
+  if(!window.fichaActualId) return;
+
+  const { data, error } = await sb
+    .from("comentarios")
+    .select("*")
+    .eq("ficha_id", window.fichaActualId)
+    .order("created_at", { ascending: true });
+
+  if(error) return;
+
+  document.getElementById("listaComentarios").innerHTML =
+    data.map(c => `
+      <div style="margin-top:6px;font-size:.85rem">
+        <strong>${c.categoria}</strong>: ${c.texto}
+      </div>
+    `).join("");
+}
+
 async function guardar(){
   if(!titulo.value.trim()){
     alert("Falta el título");
@@ -232,19 +286,19 @@ async function guardar(){
   };
 
   const { data, error } = await sb
-  .from("fichas")
-  .insert([ficha])
-  .select();
-
-console.log("DATA:", data);
-console.log("ERROR:", error);
-
+    .from("fichas")
+    .insert([ficha])
+    .select()
+    .single();
 
   if(error){
     alert(error.message);
     console.error(error);
     return;
   }
+
+  window.fichaActualId = data.id;
+  cargarComentarios();
 
   alert("Ficha guardada en Supabase ✅");
 }
@@ -273,11 +327,6 @@ function borrar(id){
   localStorage.setItem("fc",JSON.stringify(data));
   renderListado();
 }
-
-
-  const supabaseUrl = 'https://sdjwodswgtxgqirgqlpa.supabase.co'
-  const supabaseKey = 'sb_publishable_ea51fJNYUVesmBpSMGzqHw_xhLty22L'
-  const sb = supabase.createClient(supabaseUrl, supabaseKey)
   
 </script>
 
@@ -301,8 +350,28 @@ ${[0,1,2,3].map(v=>`
   <label><input type="radio" name="pr_${c}" value="continuado" onchange="actualizar()"> Continuado</label>
 </div>
 `).join(""));
+actualizar();
+ 
 </script>
   </div>
+</div>
+<div class="card">
+  <label>Comentario</label>
+
+  <select id="categoriaComentario">
+    <option value="sexo">Sexo</option>
+    <option value="violencia">Violencia</option>
+    <option value="lenguaje">Lenguaje</option>
+    <option value="drogas">Drogas</option>
+    <option value="miedo">Miedo</option>
+  </select>
+
+  <textarea id="textoComentario" rows="3"
+    placeholder="Añade una observación concreta…"></textarea>
+
+  <button onclick="guardarComentario()">Añadir comentario</button>
+
+  <div id="listaComentarios"></div>
 </div>
 
 <div class="result" id="resultado">

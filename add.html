@@ -14,6 +14,9 @@
   --text:#e6e6e6;
   --muted:#b0b7b7;
   --accent:#5fb3a2;
+  --blue:#64b5f6;
+  --danger:#e57373;
+
 }
 
 
@@ -199,6 +202,7 @@ Edad recomendada: —<br>FamilyCheck: —
   <input id="buscador" placeholder="Buscar..." oninput="renderListado()">
   <div id="resultadoListado"></div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 let estado={};
@@ -231,24 +235,51 @@ function calcularFC(){
   let clase=fc>=9?"fcA":fc>=7?"fcB":fc>=4?"fcC":"fcD";
   resultado.innerHTML=`Edad recomendada: ${edad}+<br>FamilyCheck: <span class="${clase}">${fc}/10</span>`;
 }
+function calcularFCvalor(){
+  let fc=9;
+  Object.values(estado).forEach(d=>{
+    if(d.nivel===2) fc-=d.pres==="continuado"?1:0.5;
+    if(d.nivel===3) fc-=d.pres==="continuado"?2:1;
+  });
+  return Math.max(1,Math.min(10,Math.round(fc)));
+}
 
-function guardar(){
-  const f={
-    id:crypto.randomUUID(),
-    titulo:titulo.value,
-    extra1:extra1.value,
-    extra2:extra2.value,
-    estado
-  };
-  let data=JSON.parse(localStorage.getItem("fc")||"[]");
-  if(data.some(x=>x.titulo.toLowerCase()===f.titulo.toLowerCase())){
-    alert("Ya existe");
+function calcularEdad(){
+  const fc = calcularFCvalor();
+  return fc>=8 ? 7 : fc>=6 ? 12 : 16;
+}
+async function guardar(){
+  if(!titulo.value.trim()){
+    alert("Falta el título");
     return;
   }
-  data.push(f);
-  localStorage.setItem("fc",JSON.stringify(data));
-  alert("Ficha guardada");
+
+  const tipoVal = tipo.value;
+
+  const ficha = {
+    tipo: tipoVal,
+    titulo: titulo.value,
+    fc_score: calcularFCvalor(),
+    edad: calcularEdad(),
+    anio: tipoVal !== "libro" ? parseInt(extra1.value) || null : null,
+    director: tipoVal === "pelicula" ? extra2.value || null : null,
+    autor: tipoVal === "libro" ? extra2.value || null : null,
+    isbn: tipoVal === "libro" ? extra1.value || null : null
+  };
+
+  const { error } = await supabase
+    .from("fichas")
+    .insert([ficha]);
+
+  if(error){
+    alert(error.message);
+    console.error(error);
+    return;
+  }
+
+  alert("Ficha guardada en Supabase ✅");
 }
+
 
 function toggleListado(){
   listado.style.display=listado.style.display==="none"?"block":"none";
@@ -279,8 +310,6 @@ actualizar();
   const supabaseUrl = 'https://sdjwodswgtxgqirgqlpa.supabase.co'
   const supabaseKey = 'sb_publishable_ea51fJNYUVesmBpSMGzqHw_xhLty22L'
   const supabase = supabase.createClient(supabaseUrl, supabaseKey)
-</script>
-
   
 </script>
 

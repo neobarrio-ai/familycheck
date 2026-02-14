@@ -165,46 +165,9 @@ button.secondary{
   <label>Director / Autor</label>
   <input id="extra2">
 </div>
-
-<div class="card">
-  <div class="grid">
-    <strong></strong>
-    <strong>N</strong><strong>L</strong><strong>M</strong><strong>S</strong>
-
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const categorias=["sexo","violencia","lenguaje","drogas","miedo"];
-document.write(categorias.map(c=>`
-<strong>${c.charAt(0).toUpperCase()+c.slice(1)}</strong>
-${[0,1,2,3].map(v=>`
-<div class="radio">
-  <input type="radio" name="${c}" value="${v}"
-    ${v===0?"checked":""}
-    onchange="mostrar('${c}')">
-</div>`).join("")}
-<div class="presencia" id="p_${c}">
-  ¿Puntual o continuado?
-  <label><input type="radio" name="pr_${c}" value="puntual" checked onchange="actualizar()"> Puntual</label>
-  <label><input type="radio" name="pr_${c}" value="continuado" onchange="actualizar()"> Continuado</label>
-</div>
-`).join(""));
-</script>
-  </div>
-</div>
-
-<div class="result" id="resultado">
-Edad recomendada: —<br>FamilyCheck: —
-</div>
-
-<button onclick="guardar()">Guardar ficha</button>
-<button class="secondary" onclick="toggleListado()">📋 Ver fichas</button>
-
-<div class="card" id="listado" style="display:none;">
-  <input id="buscador" placeholder="Buscar..." oninput="renderListado()">
-  <div id="resultadoListado"></div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
+const categorias=["sexo","violencia","lenguaje","drogas","miedo"];  
 let estado={};
 
 function mostrar(cat){
@@ -233,7 +196,8 @@ function calcularFC(){
   fc=Math.max(1,Math.min(10,Math.round(fc)));
   let edad=fc>=8?7:fc>=6?12:16;
   let clase=fc>=9?"fcA":fc>=7?"fcB":fc>=4?"fcC":"fcD";
-  resultado.innerHTML=`Edad recomendada: ${edad}+<br>FamilyCheck: <span class="${clase}">${fc}/10</span>`;
+  document.getElementById("resultado").innerHTML =
+  `Edad recomendada: ${edad}+<br>FamilyCheck: <span class="${clase}">${fc}/10</span>`;
 }
 function calcularFCvalor(){
   let fc=9;
@@ -305,13 +269,50 @@ function borrar(id){
   renderListado();
 }
 
-actualizar();
 
   const supabaseUrl = 'https://sdjwodswgtxgqirgqlpa.supabase.co'
   const supabaseKey = 'sb_publishable_ea51fJNYUVesmBpSMGzqHw_xhLty22L'
   const supabase = supabase.createClient(supabaseUrl, supabaseKey)
   
 </script>
+
+<div class="card">
+  <div class="grid">
+    <strong></strong>
+    <strong>N</strong><strong>L</strong><strong>M</strong><strong>S</strong>
+
+<script>
+document.write(categorias.map(c=>`
+<strong>${c.charAt(0).toUpperCase()+c.slice(1)}</strong>
+${[0,1,2,3].map(v=>`
+<div class="radio">
+  <input type="radio" name="${c}" value="${v}"
+    ${v===0?"checked":""}
+    onchange="mostrar('${c}')">
+</div>`).join("")}
+<div class="presencia" id="p_${c}">
+  ¿Puntual o continuado?
+  <label><input type="radio" name="pr_${c}" value="puntual" checked onchange="actualizar()"> Puntual</label>
+  <label><input type="radio" name="pr_${c}" value="continuado" onchange="actualizar()"> Continuado</label>
+</div>
+`).join(""));
+</script>
+  </div>
+</div>
+
+<div class="result" id="resultado">
+Edad recomendada: —<br>FamilyCheck: —
+</div>
+
+<button onclick="guardar()">Guardar ficha</button>
+<button class="secondary" onclick="toggleListado()">📋 Ver fichas</button>
+
+<div class="card" id="listado" style="display:none;">
+  <input id="buscador" placeholder="Buscar..." oninput="renderListado()">
+  <div id="resultadoListado"></div>
+</div>
+
+
 
 </body>
 </html>

@@ -214,33 +214,9 @@ async function cargarFichas(){
 </div>
 
 `;
-
-
     contenedores[f.tipo]?.appendChild(card);
   });
 }
-document.addEventListener("click", async (e) => {
-  if(!e.target.classList.contains("delete-btn")) return;
-
-  e.stopPropagation();
-
-  const id = e.target.dataset.id;
-
-  if(!confirm("¿Seguro que quieres borrar esta ficha?")) return;
-
-  const { error } = await sb
-    .from("fichas")
-    .delete()
-    .eq("id", id);
-
-  if(error){
-    alert(error.message);
-    return;
-  }
-
-  // eliminar card del DOM
-  e.target.closest(".card").remove();
-});
 async function borrarFicha(event, id){
   event.stopPropagation(); // ⛔ evita que se abra la ficha
 

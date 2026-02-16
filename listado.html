@@ -60,6 +60,8 @@ h1{
   border:1px solid rgba(255,255,255,.06);
   border-radius:10px;
   padding:16px;
+  cursor: pointer;
+
 }
 
 .card-title{
@@ -145,7 +147,7 @@ const contenedores = {
 async function cargarFichas(){
   const { data, error } = await sb
     .from("fichas")
-    .select("*, comentarios(*)")
+    .select("id, titulo, tipo, fc_score, edad, anio, created_at")
     .order("created_at", { ascending: false });
 
   if(error){
@@ -155,20 +157,26 @@ async function cargarFichas(){
 
   data.forEach(f => {
     const card = document.createElement("div");
+    card.onclick = () => {
+  window.location.href = `ficha.html?id=${f.id}`;
+};
+
     card.className = "card";
 
     card.innerHTML = `
-      <div class="card-title">${f.titulo}</div>
-      <div class="card-meta">
-        <div class="fc">FC ${f.fc_score}</div>
-        <div class="age">${f.edad}+</div>
-      </div>
-      <div class="comments">
-        ${(f.comentarios || []).map(c =>
-          `<div class="comment"><strong>${c.categoria}:</strong> ${c.texto}</div>`
-        ).join("")}
-      </div>
-    `;
+  <div class="card-title">${f.titulo}</div>
+
+  <div class="card-meta">
+    <div class="fc">FC ${f.fc_score}</div>
+    <div class="age">${f.edad}+</div>
+  </div>
+
+  <div class="age">
+    ${f.anio ? `Año: ${f.anio}` : ""}
+    · Añadido: ${new Date(f.created_at).toLocaleDateString()}
+  </div>
+`;
+
 
     contenedores[f.tipo]?.appendChild(card);
   });

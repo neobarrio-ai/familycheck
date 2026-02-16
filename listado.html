@@ -104,6 +104,19 @@ h1{
   color:var(--accent);
   font-weight:600;
 }
+  .delete-btn{
+  background:none;
+  border:none;
+  color:var(--muted);
+  font-size:.9rem;
+  cursor:pointer;
+  margin-left:8px;
+}
+
+.delete-btn:hover{
+  color:#e07a7a;
+}
+
 </style>
 </head>
 
@@ -164,7 +177,10 @@ async function cargarFichas(){
     card.className = "card";
 
     card.innerHTML = `
-  <div class="card-title">${f.titulo}</div>
+  <div class="card-title">
+  ${f.titulo}
+  <button class="delete-btn" data-id="${f.id}" title="Borrar ficha">🗑️</button>
+</div>
 
   <div class="card-meta">
     <div class="fc">FC ${f.fc_score}</div>
@@ -188,6 +204,28 @@ async function cargarFichas(){
     contenedores[f.tipo]?.appendChild(card);
   });
 }
+document.addEventListener("click", async (e) => {
+  if(!e.target.classList.contains("delete-btn")) return;
+
+  e.stopPropagation();
+
+  const id = e.target.dataset.id;
+
+  if(!confirm("¿Seguro que quieres borrar esta ficha?")) return;
+
+  const { error } = await sb
+    .from("fichas")
+    .delete()
+    .eq("id", id);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  // eliminar card del DOM
+  e.target.closest(".card").remove();
+});
 
 cargarFichas();
 </script>

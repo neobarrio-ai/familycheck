@@ -81,7 +81,7 @@ h1{
   font-weight:800;
 }
 
-.age{
+.{
   font-size:.85rem;
   color:var(--muted);
   font-weight:600;
@@ -170,11 +170,18 @@ async function cargarFichas(){
     <div class="fc">FC ${f.fc_score}</div>
     <div class="age">${f.edad}+</div>
   </div>
+<div class="age">
+  ${
+    f.tipo === "pelicula"
+      ? `${f.director || "Director desconocido"} · ${f.anio || "—"}`
+      : f.tipo === "serie"
+      ? `${f.anio || "Año desconocido"}`
+      : f.tipo === "libro"
+      ? `${f.autor || "Autor desconocido"} · ${f.anio || "—"} · ISBN ${f.isbn || "—"}`
+      : ""
+  }
+</div>
 
-  <div class="age">
-    ${f.anio ? `Año: ${f.anio}` : ""}
-    · Añadido: ${new Date(f.created_at).toLocaleDateString()}
-  </div>
 `;
 
 

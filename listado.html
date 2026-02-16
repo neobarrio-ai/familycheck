@@ -56,12 +56,26 @@ h1{
 }
 
 .card{
+  position:relative;
   background:linear-gradient(180deg,#323838,#2a3030);
   border:1px solid rgba(255,255,255,.06);
   border-radius:10px;
   padding:16px;
-  cursor: pointer;
+  cursor:pointer;
+}
 
+.card-actions{
+  position:absolute;
+  top:10px;
+  right:10px;
+}
+
+.delete-btn{
+  background:none;
+  border:none;
+  color:#e07a7a;
+  cursor:pointer;
+  font-size:1rem;
 }
 
 .card-title{
@@ -177,10 +191,11 @@ async function cargarFichas(){
     card.className = "card";
 
     card.innerHTML = `
-  <div class="card-title">
-  ${f.titulo}
-  <button class="delete-btn" data-id="${f.id}" title="Borrar ficha">🗑️</button>
+  <div class="card-title">${f.titulo}</div>
+  <div class="card-actions">
+  <button class="delete-btn" onclick="borrarFicha(event, '${f.id}')">🗑</button>
 </div>
+
 
   <div class="card-meta">
     <div class="fc">FC ${f.fc_score}</div>
@@ -226,6 +241,24 @@ document.addEventListener("click", async (e) => {
   // eliminar card del DOM
   e.target.closest(".card").remove();
 });
+async function borrarFicha(event, id){
+  event.stopPropagation(); // ⛔ evita que se abra la ficha
+
+  if(!confirm("¿Seguro que quieres borrar esta ficha?")) return;
+
+  const { error } = await sb
+    .from("fichas")
+    .delete()
+    .eq("id", id);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  // refrescar listado
+  location.reload();
+}
 
 cargarFichas();
 </script>

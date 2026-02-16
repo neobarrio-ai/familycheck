@@ -159,8 +159,12 @@ button.secondary{
   <label>Título</label>
   <input id="titulo">
 
-  <label>Año / ISBN</label>
-  <input id="extra1">
+  <label>Año</label>
+  <input id="anio">
+
+<label>ISBN</label>
+<input id="isbn">
+
 
   <label>Director / Autor</label>
   <input id="extra2">
@@ -289,10 +293,10 @@ async function guardar(){
     titulo: titulo.value,
     fc_score: calcularFCvalor(),
     edad: calcularEdad(),
-    anio: tipoVal !== "libro" ? parseInt(extra1.value) || null : null,
+    anio: anio.value ? parseInt(anio.value) : null,
     director: tipoVal === "pelicula" ? extra2.value || null : null,
     autor: tipoVal === "libro" ? extra2.value || null : null,
-    isbn: tipoVal === "libro" ? extra1.value || null : null
+    isbn: isbn.value || null
   };
 
   const { data, error } = await sb

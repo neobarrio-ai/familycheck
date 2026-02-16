@@ -80,12 +80,12 @@ h1{
   font-size:1.3rem;
   font-weight:800;
 }
-
-.{
+.meta-extra{
   font-size:.85rem;
   color:var(--muted);
-  font-weight:600;
+  font-weight:500;
 }
+
 
 .comments{
   margin-top:10px;
@@ -147,7 +147,7 @@ const contenedores = {
 async function cargarFichas(){
   const { data, error } = await sb
     .from("fichas")
-    .select("id, titulo, tipo, fc_score, edad, anio, created_at")
+    .select("id, titulo, tipo, fc_score, edad, anio, director, autor, isbn")
     .order("created_at", { ascending: false });
 
   if(error){
@@ -170,7 +170,7 @@ async function cargarFichas(){
     <div class="fc">FC ${f.fc_score}</div>
     <div class="age">${f.edad}+</div>
   </div>
-<div class="age">
+<div class="meta-extra">
   ${
     f.tipo === "pelicula"
       ? `${f.director || "Director desconocido"} · ${f.anio || "—"}`

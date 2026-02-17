@@ -240,6 +240,11 @@ async function cargarFichas(){
   }
 
   data.forEach(f => {
+    console.log(
+  f.titulo,
+  JSON.stringify(f.cover_url)
+);
+
     const card = document.createElement("div");
     card.onclick = () => {
   window.location.href = `ficha.html?id=${f.id}`;
@@ -249,7 +254,8 @@ async function cargarFichas(){
 
     card.innerHTML = `
   <div class="card-bg"
-       style="background-image:url('${f.cover_url || "https://image.tmdb.org/t/p/w500/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg"}')"
+       style="background-image:url('${(f.cover_url || "").trim()}')"
+
 
   </div>
 

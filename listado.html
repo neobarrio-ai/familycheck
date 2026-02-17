@@ -63,6 +63,14 @@ h1{
   padding:16px;
   cursor:pointer;
 }
+.card-cover{
+  width:100%;
+  aspect-ratio:2/3;
+  border-radius:6px;
+  object-fit:cover;
+  margin-bottom:10px;
+  background:#1a1f1f;
+}
 
 .card-actions{
   position:absolute;
@@ -191,29 +199,32 @@ async function cargarFichas(){
     card.className = "card";
 
     card.innerHTML = `
-  <div class="card-title">${f.titulo}</div>
-  <div class="card-actions">
-  <button class="delete-btn" onclick="borrarFicha(event, '${f.id}')">🗑</button>
-</div>
+  ${f.cover_url ? `<img src="${f.cover_url}" class="card-cover" alt="${f.titulo}">` : ""}
 
+  <div class="card-title">${f.titulo}</div>
+
+  <div class="card-actions">
+    <button class="delete-btn" onclick="borrarFicha(event, '${f.id}')">🗑</button>
+  </div>
 
   <div class="card-meta">
     <div class="fc">FC ${f.fc_score}</div>
     <div class="age">${f.edad}+</div>
   </div>
-<div class="meta-extra">
-  ${
-    f.tipo === "pelicula"
-      ? `${f.director || "Director desconocido"} · ${f.anio || "—"}`
-      : f.tipo === "serie"
-      ? `${f.anio || "Año desconocido"}`
-      : f.tipo === "libro"
-      ? `${f.autor || "Autor desconocido"} · ${f.anio || "—"} · ISBN ${f.isbn || "—"}`
-      : ""
-  }
-</div>
 
+  <div class="meta-extra">
+    ${
+      f.tipo === "pelicula"
+        ? `${f.director || "Director desconocido"} · ${f.anio || "—"}`
+        : f.tipo === "serie"
+        ? `${f.anio || "Año desconocido"}`
+        : f.tipo === "libro"
+        ? `${f.autor || "Autor desconocido"} · ${f.anio || "—"} · ISBN ${f.isbn || "—"}`
+        : ""
+    }
+  </div>
 `;
+
     contenedores[f.tipo]?.appendChild(card);
   });
 }

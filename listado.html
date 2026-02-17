@@ -63,6 +63,57 @@ h1{
   padding:16px;
   cursor:pointer;
 }
+  .card{
+  position:relative;
+  height:180px;
+  overflow:hidden;
+}
+
+/* Fondo con portada */
+.card-bg{
+  position:absolute;
+  inset:0;
+  background-size:cover;
+  background-position:center;
+  filter:saturate(.9) brightness(.7);
+}
+
+/* Degradado lateral */
+.card-bg::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    90deg,
+    rgba(30,35,35,0.15) 0%,
+    rgba(30,35,35,0.85) 55%,
+    rgba(30,35,35,1) 100%
+  );
+}
+
+/* Contenido encima */
+.card-content{
+  position:relative;
+  z-index:2;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:16px;
+}
+
+/* Ajustes tipográficos */
+.card-title{
+  font-size:1.05rem;
+  font-weight:700;
+}
+
+.meta-extra{
+  margin-top:6px;
+  font-size:.8rem;
+  color:var(--muted);
+}
+
 .card-cover{
   width:100%;
   aspect-ratio:2/3;
@@ -199,30 +250,36 @@ async function cargarFichas(){
     card.className = "card";
 
     card.innerHTML = `
-  ${f.cover_url ? `<img src="${f.cover_url}" class="card-cover" alt="${f.titulo}">` : ""}
+  <div class="card-bg"
+       style="background-image:url('${f.cover_url || ""}')">
+  </div>
 
-  <div class="card-title">${f.titulo}</div>
+  <div class="card-content">
+    <div class="card-title">${f.titulo}</div>
+
+    <div class="card-meta">
+      <div class="fc">FC ${f.fc_score}</div>
+      <div class="age">${f.edad}+</div>
+    </div>
+
+    <div class="meta-extra">
+      ${
+        f.tipo === "pelicula"
+          ? `${f.director || "Director desconocido"} · ${f.anio || "—"}`
+          : f.tipo === "serie"
+          ? `${f.anio || "Año desconocido"}`
+          : f.tipo === "libro"
+          ? `${f.autor || "Autor desconocido"} · ${f.anio || "—"} · ISBN ${f.isbn || "—"}`
+          : ""
+      }
+    </div>
+  </div>
 
   <div class="card-actions">
     <button class="delete-btn" onclick="borrarFicha(event, '${f.id}')">🗑</button>
   </div>
+`;
 
-  <div class="card-meta">
-    <div class="fc">FC ${f.fc_score}</div>
-    <div class="age">${f.edad}+</div>
-  </div>
-
-  <div class="meta-extra">
-    ${
-      f.tipo === "pelicula"
-        ? `${f.director || "Director desconocido"} · ${f.anio || "—"}`
-        : f.tipo === "serie"
-        ? `${f.anio || "Año desconocido"}`
-        : f.tipo === "libro"
-        ? `${f.autor || "Autor desconocido"} · ${f.anio || "—"} · ISBN ${f.isbn || "—"}`
-        : ""
-    }
-  </div>
 `;
 
     contenedores[f.tipo]?.appendChild(card);

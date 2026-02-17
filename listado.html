@@ -62,11 +62,6 @@ h1{
   padding:16px;
   cursor:pointer;
 }
-  .card{
-  position:relative;
-  height:180px;
-  overflow:hidden;
-}
 
 /* Fondo con portada */
 .card-bg{
@@ -75,6 +70,7 @@ h1{
   background-size:cover;
   background-position:center;
   filter:saturate(.9) brightness(.7);
+  z-index:0;
 }
 
 /* Degradado lateral */
@@ -84,11 +80,12 @@ h1{
   inset:0;
   background:linear-gradient(
     90deg,
-    rgba(30,35,35,0.15) 0%,
-    rgba(30,35,35,0.85) 55%,
-    rgba(30,35,35,1) 100%
+    rgba(30,35,35,0.05) 0%,
+    rgba(30,35,35,0.55) 45%,
+    rgba(30,35,35,0.9) 100%
   );
 }
+
 
 /* Contenido encima */
 .card-content{

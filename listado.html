@@ -182,7 +182,7 @@ const contenedores = {
 async function cargarFichas(){
   const { data, error } = await sb
     .from("fichas")
-    .select("id, titulo, tipo, fc_score, edad, anio, director, autor, isbn")
+    .select("id, titulo, tipo, fc_score, edad, anio, director, autor, isbn, cover_url")
     .order("created_at", { ascending: false });
 
   if(error){

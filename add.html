@@ -153,6 +153,7 @@ button.secondary{
   <label>Tipo</label>
   <select id="tipo">
     <option value="pelicula">Película</option>
+    <option value="serie">Serie</option>
     <option value="libro">Libro</option>
   </select>
 
@@ -178,6 +179,11 @@ const sb = supabase.createClient(supabaseUrl, supabaseKey)
 
 let estado={};
 let comentariosPendientes = [];
+  tipo.addEventListener("change", () => {
+  const esLibro = tipo.value === "libro";
+  document.getElementById("isbn").parentElement.style.display = esLibro ? "block" : "none";
+});
+
 
 function mostrar(cat){
   const nivel=+document.querySelector(`input[name=${cat}]:checked`).value;
@@ -324,6 +330,9 @@ async function guardar(){
   if(tipoVal === "libro"){
     cover_url = obtenerCoverLibro(isbn.value);
   }
+if(!cover_url){
+  console.warn("No se encontró portada para:", titulo.value);
+}
 
   const ficha = {
     tipo: tipoVal,

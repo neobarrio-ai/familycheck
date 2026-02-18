@@ -315,6 +315,16 @@ async function guardar(){
 
   const tipoVal = tipo.value;
 
+  let cover_url = null;
+
+  if(tipoVal === "pelicula" || tipoVal === "serie"){
+    cover_url = await obtenerCoverTMDB(titulo.value, tipoVal);
+  }
+
+  if(tipoVal === "libro"){
+    cover_url = obtenerCoverLibro(isbn.value);
+  }
+
   const ficha = {
     tipo: tipoVal,
     titulo: titulo.value,
@@ -323,29 +333,9 @@ async function guardar(){
     anio: anio.value ? parseInt(anio.value) : null,
     director: tipoVal === "pelicula" ? extra2.value || null : null,
     autor: tipoVal === "libro" ? extra2.value || null : null,
-    isbn: isbn.value || null
+    isbn: isbn.value || null,
+    cover_url
   };
-let cover_url = null;
-
-if(tipoVal === "pelicula" || tipoVal === "serie"){
-  cover_url = await obtenerCoverTMDB(titulo.value, tipoVal);
-}
-
-if(tipoVal === "libro"){
-  cover_url = obtenerCoverLibro(extra1.value);
-}
-
-const ficha = {
-  tipo: tipoVal,
-  titulo: titulo.value,
-  fc_score: calcularFCvalor(),
-  edad: calcularEdad(),
-  anio: tipoVal !== "libro" ? parseInt(extra1.value) || null : null,
-  director: tipoVal === "pelicula" ? extra2.value || null : null,
-  autor: tipoVal === "libro" ? extra2.value || null : null,
-  isbn: tipoVal === "libro" ? extra1.value || null : null,
-  cover_url
-};
 
   const { data, error } = await sb
     .from("fichas")
@@ -360,22 +350,23 @@ const ficha = {
   }
 
   window.fichaActualId = data.id;
+
   // Guardar comentarios pendientes
-if(comentariosPendientes.length){
-  await sb.from("comentarios").insert(
-    comentariosPendientes.map(c => ({
-      ficha_id: window.fichaActualId,
-      categoria: c.categoria,
-      texto: c.texto
-    }))
-  );
-  comentariosPendientes = [];
-}
+  if(comentariosPendientes.length){
+    await sb.from("comentarios").insert(
+      comentariosPendientes.map(c => ({
+        ficha_id: window.fichaActualId,
+        categoria: c.categoria,
+        texto: c.texto
+      }))
+    );
+    comentariosPendientes = [];
+  }
 
   cargarComentarios();
-
   alert("Ficha guardada en Supabase ✅");
 }
+
   
 </script>
 

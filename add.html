@@ -221,6 +221,33 @@ function calcularEdad(){
   const fc = calcularFCvalor();
   return fc>=8 ? 7 : fc>=6 ? 12 : 16;
 }
+  async function obtenerCoverTMDB(titulo, tipo){
+  const API_KEY = "8b046055847ff4482e609782a6c675e4";
+  const endpoint =
+    tipo === "pelicula"
+      ? "movie"
+      : "tv";
+
+  const url = `https://api.themoviedb.org/3/search/${endpoint}?api_key=${API_KEY}&language=es-ES&query=${encodeURIComponent(titulo)}`;
+
+  try{
+    const res = await fetch(url);
+    const json = await res.json();
+
+    if(json.results && json.results.length > 0 && json.results[0].poster_path){
+      return `https://image.tmdb.org/t/p/w500${json.results[0].poster_path}`;
+    }
+  }catch(e){
+    console.error("TMDB error", e);
+  }
+
+  return null;
+}
+function obtenerCoverLibro(isbn){
+  if(!isbn) return null;
+  return `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg`;
+}
+
   async function guardarComentario(){
   const categoria = document.getElementById("categoriaComentario").value;
   const texto = document.getElementById("textoComentario").value.trim();
@@ -298,6 +325,27 @@ async function guardar(){
     autor: tipoVal === "libro" ? extra2.value || null : null,
     isbn: isbn.value || null
   };
+let cover_url = null;
+
+if(tipoVal === "pelicula" || tipoVal === "serie"){
+  cover_url = await obtenerCoverTMDB(titulo.value, tipoVal);
+}
+
+if(tipoVal === "libro"){
+  cover_url = obtenerCoverLibro(extra1.value);
+}
+
+const ficha = {
+  tipo: tipoVal,
+  titulo: titulo.value,
+  fc_score: calcularFCvalor(),
+  edad: calcularEdad(),
+  anio: tipoVal !== "libro" ? parseInt(extra1.value) || null : null,
+  director: tipoVal === "pelicula" ? extra2.value || null : null,
+  autor: tipoVal === "libro" ? extra2.value || null : null,
+  isbn: tipoVal === "libro" ? extra1.value || null : null,
+  cover_url
+};
 
   const { data, error } = await sb
     .from("fichas")

@@ -318,11 +318,18 @@ async function cargarFichas(){
 };
 
     card.className = "card";
+    
 const claseScore =
   f.fc_score >= 8 ? "score-a" :
   f.fc_score >= 6 ? "score-b" :
   f.fc_score >= 4 ? "score-c" :
   "score-d";
+
+const claseBorde =
+  f.fc_score >= 8 ? "fc-a" :
+  f.fc_score >= 6 ? "fc-b" :
+  f.fc_score >= 4 ? "fc-c" :
+  "fc-d";
     
     card.innerHTML = `
   <div class="card-bg"

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patrimonio Mensual</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body{
+    font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+    background:#f4f6f9;
+    margin:0;
+    padding:20px;
+}
+.container{
+    max-width:520px;
+    margin:auto;
+}
+h1{ text-align:center; }
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:18px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.05);
+    margin-bottom:20px;
+}
+
+input,button{
+    width:100%;
+    padding:10px;
+    margin-bottom:10px;
+    border-radius:10px;
+    border:1px solid #ddd;
+    font-size:15px;
+}
+
+button{
+    background:#3498db;
+    color:white;
+    border:none;
+    cursor:pointer;
+}
+button:hover{ opacity:0.9; }
+
+.total{
+    font-size:28px;
+    font-weight:bold;
+    text-align:center;
+}
+.small{
+    text-align:center;
+    margin-top:5px;
+    font-size:14px;
+}
+.positive{ color:#2ecc71; }
+.negative{ color:#e74c3c; }
+.neutral{ color:#555; }
+
+label{
+    font-size:14px;
+    font-weight:500;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h1>💰 Patrimonio Mensual</h1>
+
+<div class="card">
+    <label>Seleccionar mes</label>
+    <input type="month" id="monthPicker">
+
+    <label>Albert CX</label>
+    <input type="number" id="c1">
+
+    <label>Albert DB</label>
+    <input type="number" id="c2">
+
+    <label>Cris CX</label>
+    <input type="number" id="c3">
+
+    <button onclick="saveMonth()">Guardar datos del mes</button>
+</div>
+
+<div class="card">
+    <div class="total" id="total">0 €</div>
+    <div class="small neutral" id="difference">Sin datos previos</div>
+</div>
+
+<div class="card">
+    <canvas id="chart"></canvas>
+</div>
+
+</div>
+
+<script>
+let data = JSON.parse(localStorage.getItem("monthlyData")) || {};
+
+const monthPicker = document.getElementById("monthPicker");
+const c1 = document.getElementById("c1");
+const c2 = document.getElementById("c2");
+const c3 = document.getElementById("c3");
+
+monthPicker.value = new Date().toISOString().slice(0,7);
+
+function saveMonth(){
+    const month = monthPicker.value;
+    if(!month) return;
+
+    const total =
+        (parseFloat(c1.value)||0) +
+        (parseFloat(c2.value)||0) +
+        (parseFloat(c3.value)||0);
+
+    data[month] = total;
+    localStorage.setItem("monthlyData", JSON.stringify(data));
+    render();
+}
+
+function render(){
+    const selectedMonth = monthPicker.value;
+    const totalEl = document.getElementById("total");
+    const diffEl = document.getElementById("difference");
+
+    if(!data[selectedMonth]){
+        totalEl.textContent="0 €";
+        diffEl.textContent="Mes no registrado";
+        diffEl.className="small neutral";
+        renderChart();
+        return;
+    }
+
+    const currentTotal = data[selectedMonth];
+    totalEl.textContent=currentTotal.toFixed(2)+" €";
+
+    const sortedMonths = Object.keys(data).sort();
+    const index = sortedMonths.indexOf(selectedMonth);
+
+    if(index>0){
+        const previousTotal = data[sortedMonths[index-1]];
+        const diff = currentTotal - previousTotal;
+
+        diffEl.textContent=
+            (diff>=0?"+":"")+diff.toFixed(2)+" € respecto al mes anterior";
+
+        diffEl.className="small "+(diff>0?"positive":diff<0?"negative":"neutral");
+    } else {
+        diffEl.textContent="Sin mes anterior registrado";
+        diffEl.className="small neutral";
+    }
+
+    renderChart();
+}
+
+function renderChart(){
+    const sortedMonths = Object.keys(data).sort();
+
+    const totals = [];
+    const diffs = [];
+    const diffColors = [];
+
+    sortedMonths.forEach((month,i)=>{
+        totals.push(data[month]);
+
+        if(i===0){
+            diffs.push(0);
+            diffColors.push("#999");
+        } else {
+            const diff = data[month] - data[sortedMonths[i-1]];
+            diffs.push(diff);
+            diffColors.push(diff>=0 ? "#2ecc71" : "#e74c3c");
+        }
+    });
+
+    const ctx=document.getElementById("chart").getContext("2d");
+    if(window.myChart) window.myChart.destroy();
+
+    window.myChart=new Chart(ctx,{
+        type:"bar",
+        data:{
+            labels:sortedMonths,
+            datasets:[
+                {
+                    label:"Total mensual",
+                    data:totals,
+                    backgroundColor:"#3498db"
+                },
+                {
+                    label:"Diferencia",
+                    data:diffs,
+                    backgroundColor:diffColors
+                }
+            ]
+        },
+        options:{
+            responsive:true,
+            plugins:{
+                legend:{position:"bottom"}
+            },
+            scales:{
+                y:{beginAtZero:false}
+            }
+        }
+    });
+}
+
+monthPicker.addEventListener("change", render);
+
+render();
+</script>
+
+</body>
+</html>

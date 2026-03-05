@@ -7,93 +7,177 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 body{
-    font-family:-apple-system,BlinkMacSystemFont,sans-serif;
-    background:#f4f6f9;
-    margin:0;
-    padding:20px;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+background:#0f172a;
+margin:0;
+padding:20px;
+color:#1e293b;
 }
+
 .container{
-    max-width:520px;
-    margin:auto;
-}
-h1{ text-align:center; }
-
-.card{
-    background:white;
-    padding:20px;
-    border-radius:18px;
-    box-shadow:0 8px 20px rgba(0,0,0,0.05);
-    margin-bottom:20px;
+max-width:520px;
+margin:auto;
 }
 
-input,button{
-    width:100%;
-    padding:10px;
-    margin-bottom:10px;
-    border-radius:10px;
-    border:1px solid #ddd;
-    font-size:15px;
+/* TARJETA PRINCIPAL */
+
+.balance-card{
+background:linear-gradient(135deg,#1e293b,#334155);
+border-radius:20px;
+padding:30px;
+color:white;
+margin-bottom:20px;
+box-shadow:0 20px 40px rgba(0,0,0,0.25);
 }
 
-button{
-    background:#3498db;
-    color:white;
-    border:none;
-    cursor:pointer;
+.balance-title{
+font-size:14px;
+opacity:0.7;
+margin-bottom:10px;
 }
-button:hover{ opacity:0.9; }
 
 .total{
-    font-size:28px;
-    font-weight:bold;
-    text-align:center;
+font-size:40px;
+font-weight:700;
+letter-spacing:-1px;
 }
+
 .small{
-    text-align:center;
-    margin-top:5px;
-    font-size:14px;
+margin-top:8px;
+font-size:14px;
 }
-.positive{ color:#2ecc71; }
-.negative{ color:#e74c3c; }
-.neutral{ color:#555; }
+
+.positive{ color:#4ade80; }
+.negative{ color:#f87171; }
+.neutral{ color:#cbd5f5; }
+
+/* TARJETAS */
+
+.card{
+background:white;
+padding:22px;
+border-radius:18px;
+margin-bottom:20px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* INPUTS */
 
 label{
-    font-size:14px;
-    font-weight:500;
+font-size:12px;
+font-weight:600;
+color:#64748b;
+}
+
+input{
+width:100%;
+padding:12px;
+margin-top:6px;
+margin-bottom:14px;
+border-radius:10px;
+border:1px solid #e2e8f0;
+font-size:15px;
+background:#f8fafc;
+}
+
+input:focus{
+outline:none;
+border-color:#3b82f6;
+background:white;
+}
+
+/* CUENTAS */
+
+.accounts{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+}
+
+/* BOTON */
+
+button{
+width:100%;
+padding:14px;
+border:none;
+border-radius:12px;
+background:#3b82f6;
+color:white;
+font-weight:600;
+font-size:15px;
+cursor:pointer;
+}
+
+button:hover{
+background:#2563eb;
+}
+
+/* GRAFICO */
+
+.chart-card{
+padding-top:15px;
+}
+
+.chart-title{
+font-size:14px;
+font-weight:600;
+margin-bottom:10px;
+color:#334155;
 }
 </style>
 </head>
 <body>
 
 <div class="container">
-<h1>💰 Patrimonio Mensual</h1>
+
+<div class="balance-card">
+
+<div class="balance-title">Patrimonio total</div>
+<div class="total" id="total">0 €</div>
+<div class="small neutral" id="difference">Sin datos previos</div>
+
+</div>
+
 
 <div class="card">
-    <label>Seleccionar mes</label>
-    <input type="month" id="monthPicker">
 
-    <label>Albert CX</label>
-    <input type="number" id="c1">
+<label>Mes</label>
+<input type="month" id="monthPicker">
 
-    <label>Albert DB</label>
-    <input type="number" id="c2">
+<div class="accounts">
 
-    <label>Cris CX</label>
-    <input type="number" id="c3">
-
-    <button onclick="saveMonth()">Guardar datos del mes</button>
+<div>
+<label>Albert CX</label>
+<input type="number" id="c1">
 </div>
 
-<div class="card">
-    <div class="total" id="total">0 €</div>
-    <div class="small neutral" id="difference">Sin datos previos</div>
+<div>
+<label>Albert DB</label>
+<input type="number" id="c2">
 </div>
 
-<div class="card">
-    <canvas id="chart"></canvas>
+<div>
+<label>Cris CX</label>
+<input type="number" id="c3">
 </div>
 
 </div>
+
+<button onclick="saveMonth()">Guardar mes</button>
+
+</div>
+
+
+<div class="card chart-card">
+
+<div class="chart-title">Evolución del patrimonio</div>
+<canvas id="chart"></canvas>
+
+</div>
+
+</div>
+
+</body>
 
 <script>
 let data = JSON.parse(localStorage.getItem("monthlyData")) || {};
@@ -142,14 +226,14 @@ function render(){
         return;
     }
 
-    const currentTotal = data[selectedMonth];
+    const currentTotal = getTotal(selectedMonth);
     totalEl.textContent=currentTotal.toFixed(2)+" €";
 
     const sortedMonths = Object.keys(data).sort();
     const index = sortedMonths.indexOf(selectedMonth);
 
     if(index>0){
-        const previousTotal = data[sortedMonths[index-1]];
+        const previousTotal = getTotal(sortedMonths[index-1]);
         const diff = currentTotal - previousTotal;
 
         diffEl.textContent=
@@ -164,6 +248,16 @@ function render(){
     renderChart();
 }
 
+function getTotal(month){
+    if(!data[month]) return 0;
+
+    return (
+        (data[month].c1 || 0) +
+        (data[month].c2 || 0) +
+        (data[month].c3 || 0)
+    );
+}
+
 function renderChart(){
     const sortedMonths = Object.keys(data).sort();
 
@@ -172,13 +266,13 @@ function renderChart(){
     const diffColors = [];
 
     sortedMonths.forEach((month,i)=>{
-        totals.push(data[month]);
+        totals.push(getTotal(month));
 
         if(i===0){
             diffs.push(0);
             diffColors.push("#999");
         } else {
-            const diff = data[month] - data[sortedMonths[i-1]];
+            const diff = getTotal(month) - getTotal(sortedMonths[i-1]);
             diffs.push(diff);
             diffColors.push(diff>=0 ? "#2ecc71" : "#e74c3c");
         }
@@ -222,6 +316,4 @@ render();
 </script>
 
 </body>
-
 </html>
-

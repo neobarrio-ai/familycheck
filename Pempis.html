@@ -106,16 +106,22 @@ const c3 = document.getElementById("c3");
 monthPicker.value = new Date().toISOString().slice(0,7);
 
 function saveMonth(){
+
     const month = monthPicker.value;
-    if(!month) return;
 
-    const total =
-        (parseFloat(c1.value)||0) +
-        (parseFloat(c2.value)||0) +
-        (parseFloat(c3.value)||0);
+    data[month] = {
+        c1: parseFloat(c1.value) || 0,
+        c2: parseFloat(c2.value) || 0,
+        c3: parseFloat(c3.value) || 0
+    };
 
-    data[month] = total;
     localStorage.setItem("monthlyData", JSON.stringify(data));
+
+    // limpiar campos
+    c1.value = "";
+    c2.value = "";
+    c3.value = "";
+
     render();
 }
 
@@ -212,4 +218,5 @@ render();
 </script>
 
 </body>
+
 </html>

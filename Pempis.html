@@ -109,20 +109,24 @@ function saveMonth(){
 
     const month = monthPicker.value;
 
+    const v1 = parseFloat(c1.value) || 0;
+    const v2 = parseFloat(c2.value) || 0;
+    const v3 = parseFloat(c3.value) || 0;
+
     data[month] = {
-        c1: parseFloat(c1.value) || 0,
-        c2: parseFloat(c2.value) || 0,
-        c3: parseFloat(c3.value) || 0
+        c1: v1,
+        c2: v2,
+        c3: v3
     };
 
     localStorage.setItem("monthlyData", JSON.stringify(data));
 
-    // limpiar campos
+    render();
+
+    // limpiar campos después de guardar
     c1.value = "";
     c2.value = "";
     c3.value = "";
-
-    render();
 }
 
 function render(){
@@ -220,3 +224,4 @@ render();
 </body>
 
 </html>
+

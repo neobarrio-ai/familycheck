@@ -98,18 +98,20 @@ gap:12px;
 
 button{
 width:100%;
-padding:14px;
+padding:16px;
 border:none;
-border-radius:12px;
-background:#3b82f6;
+border-radius:14px;
+background:linear-gradient(135deg,#1e293b,#334155);
 color:white;
 font-weight:600;
 font-size:15px;
 cursor:pointer;
+transition:all 0.15s ease;
 }
 
 button:hover{
-background:#2563eb;
+transform:translateY(-1px);
+box-shadow:0 6px 16px rgba(0,0,0,0.25);
 }
 
 /* GRAFICO */
@@ -124,6 +126,151 @@ font-weight:600;
 margin-bottom:10px;
 color:#334155;
 }
+
+.month-row{
+margin-bottom:18px;
+}
+
+.accounts{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:16px;
+margin-bottom:20px;
+}
+
+.account:nth-child(3){
+grid-column:1 / span 2;
+}
+
+.account input{
+font-size:16px;
+font-weight:500;
+padding:14px;
+}
+
+.account input::placeholder{
+color:#94a3b8;
+}
+
+button{
+margin-top:5px;
+}
+
+.accounts{
+display:flex;
+flex-direction:column;
+gap:12px;
+margin-bottom:20px;
+}
+
+.account-card{
+background:#f8fafc;
+border-radius:14px;
+padding:14px;
+display:flex;
+flex-direction:column;
+cursor:pointer;
+transition:all 0.15s ease;
+border:1px solid #e2e8f0;
+}
+
+.account-card:hover{
+background:#f1f5f9;
+}
+
+.account-left{
+display:flex;
+align-items:center;
+gap:12px;
+}
+
+.account-icon{
+font-size:20px;
+}
+
+.account-name{
+font-weight:600;
+font-size:14px;
+}
+
+.account-balance{
+font-size:13px;
+color:#64748b;
+}
+
+.accounts{
+display:flex;
+flex-direction:column;
+gap:12px;
+margin-bottom:20px;
+}
+
+.account-row{
+display:flex;
+align-items:center;
+justify-content:space-between;
+background:#f8fafc;
+border:1px solid #e2e8f0;
+border-radius:14px;
+padding:12px 14px;
+}
+
+.account-info{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.account-icon{
+font-size:18px;
+}
+
+.account-name{
+font-weight:600;
+font-size:14px;
+}
+
+.account-input{
+width:120px;
+text-align:right;
+font-size:16px;
+font-weight:600;
+border:none;
+background:transparent;
+}
+
+.account-input:focus{
+outline:none;
+}
+
+.month-selector{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:20px;
+margin-bottom:20px;
+}
+
+.month-display{
+font-size:18px;
+font-weight:600;
+color:#1e293b;
+}
+
+.month-btn{
+background:#f1f5f9;
+border:none;
+border-radius:10px;
+width:36px;
+height:36px;
+font-size:18px;
+cursor:pointer;
+}
+
+.month-btn:hover{
+background:#e2e8f0;
+}
+
 </style>
 </head>
 <body>
@@ -141,29 +288,47 @@ color:#334155;
 
 <div class="card">
 
-<label>Mes</label>
-<input type="month" id="monthPicker">
+<div class="month-selector">
+
+<button class="month-btn" onclick="changeMonth(-1)">‹</button>
+
+<div class="month-display" id="monthDisplay"></div>
+
+<button class="month-btn" onclick="changeMonth(1)">›</button>
+
+<input type="month" id="monthPicker" style="display:none">
+
+</div>
 
 <div class="accounts">
 
-<div>
-<label>Albert CX</label>
-<input type="number" id="c1">
+<div class="account-row">
+<div class="account-info">
+<div class="account-icon">💳</div>
+<div class="account-name">Albert CX</div>
+</div>
+<input type="number" id="c1" class="account-input" placeholder="0">
 </div>
 
-<div>
-<label>Albert DB</label>
-<input type="number" id="c2">
+<div class="account-row">
+<div class="account-info">
+<div class="account-icon">💳</div>
+<div class="account-name">Albert DB</div>
+</div>
+<input type="number" id="c2" class="account-input" placeholder="0">
 </div>
 
-<div>
-<label>Cris CX</label>
-<input type="number" id="c3">
+<div class="account-row">
+<div class="account-info">
+<div class="account-icon">💳</div>
+<div class="account-name">Cris CX</div>
+</div>
+<input type="number" id="c3" class="account-input" placeholder="0">
 </div>
 
 </div>
 
-<button onclick="saveMonth()">Guardar mes</button>
+<button onclick="saveMonth()">GUARDAR</button>
 
 </div>
 
@@ -258,9 +423,48 @@ function getTotal(month){
     );
 }
 
-function renderChart(){
-    const sortedMonths = Object.keys(data).sort();
+function editAccount(id){
 
+const input = document.getElementById(id);
+
+if(input.style.display === "block"){
+input.style.display = "none";
+}else{
+input.style.display = "block";
+input.focus();
+}
+
+}
+
+function updateMonthDisplay(){
+
+const date = new Date(monthPicker.value);
+
+const options = { month: 'long', year: 'numeric' };
+
+document.getElementById("monthDisplay").textContent =
+date.toLocaleDateString("es-ES", options);
+
+}
+
+function changeMonth(step){
+
+const date = new Date(monthPicker.value);
+
+date.setMonth(date.getMonth() + step);
+
+monthPicker.value = date.toISOString().slice(0,7);
+
+updateMonthDisplay();
+
+render();
+
+}
+
+function renderChart(){
+    const selectedMonth = monthPicker.value;
+    const sortedMonths = Object.keys(data).sort();
+    
     const totals = [];
     const diffs = [];
     const diffColors = [];
@@ -277,6 +481,7 @@ function renderChart(){
             diffColors.push(diff>=0 ? "#2ecc71" : "#e74c3c");
         }
     });
+
 
     const ctx=document.getElementById("chart").getContext("2d");
     if(window.myChart) window.myChart.destroy();
@@ -311,7 +516,7 @@ function renderChart(){
 }
 
 monthPicker.addEventListener("change", render);
-
+updateMonthDisplay();
 render();
 </script>
 
